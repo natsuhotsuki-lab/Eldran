@@ -258,7 +258,14 @@ nav {
   background: var(--parchment-dark);
   border: 1px solid var(--parchment-deep);
   border-radius: 2px;
-  padding: 12px 8px;
+  padding: 12px 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-main {
+  flex: 1;
   text-align: center;
 }
 
@@ -267,32 +274,85 @@ nav {
   letter-spacing: 0.12em;
   color: var(--ink-light);
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .stat-value {
   font-family: 'Cinzel', serif;
-  font-size: 28px;
+  font-size: 32px;
   color: var(--ink);
   line-height: 1;
-  margin-bottom: 6px;
 }
 
+.stat-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-arrow {
+  width: 28px; height: 28px;
+  background: var(--parchment);
+  border: 1px solid var(--parchment-deep);
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  color: var(--ink-faded);
+  transition: all 0.15s;
+  user-select: none;
+}
+.stat-arrow:hover:not(:disabled) { border-color: var(--gold); color: var(--ink); background: var(--parchment); }
+.stat-arrow:active:not(:disabled) { transform: scale(0.92); }
+.stat-arrow:disabled { opacity: 0.3; cursor: default; }
+
+/* dots kept for locked display */
 .stat-dots {
   display: flex;
   justify-content: center;
   gap: 3px;
+  margin-top: 5px;
 }
-
 .stat-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
   border: 1px solid var(--parchment-deep);
   background: transparent;
-  cursor: pointer;
-  transition: background 0.15s;
 }
 .stat-dot.filled { background: var(--gold); border-color: var(--gold); }
+
+.stat-points-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--parchment-dark);
+  border: 1px solid var(--parchment-deep);
+  border-radius: 2px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  font-size: 12px;
+  color: var(--ink-faded);
+}
+.stat-points-left {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  color: var(--gold);
+  margin: 0 6px;
+}
+.stat-locked-badge {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--ink-light);
+  padding: 3px 8px;
+  border: 1px solid var(--parchment-deep);
+  border-radius: 1px;
+  background: var(--parchment-dark);
+}
+.stat-confirm-wrap {
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
 
 /* ITEMS */
 .items-grid {
@@ -1075,23 +1135,8 @@ nav {
       <div class="ornament">— ✦ —</div>
 
       <div class="section-title">✦ 能力數值</div>
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-name">力量</div>
-          <div class="stat-value" id="statStr">0</div>
-          <div class="stat-dots" id="dotsStr"></div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-name">智慧</div>
-          <div class="stat-value" id="statWis">0</div>
-          <div class="stat-dots" id="dotsWis"></div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-name">魅力</div>
-          <div class="stat-value" id="statCha">0</div>
-          <div class="stat-dots" id="dotsCha"></div>
-        </div>
-      </div>
+      <div id="statPointsBar"></div>
+      <div class="stats-grid" id="statsGrid"></div>
 
       <div class="ornament">— ✦ —</div>
 
@@ -1521,6 +1566,7 @@ function renderChar() {
     document.getElementById('avatarPlaceholder').style.display = 'none';
   }
   renderStats();
+  renderStatPointsBar();
   renderItems();
 }
 
@@ -1545,26 +1591,99 @@ function uploadAvatar(e) {
   reader.readAsDataURL(file);
 }
 
+function totalPoints() {
+  const s = state.char.stats;
+  return (s.str || 0) + (s.wis || 0) + (s.cha || 0);
+}
+
+function renderStatPointsBar() {
+  const bar = document.getElementById('statPointsBar');
+  if (!bar) return;
+  const locked = state.char.statsLocked;
+  if (locked) {
+    bar.innerHTML = `<div class="stat-points-bar">
+      <span>能力數值已確認分配</span>
+      <span class="stat-locked-badge">🔒 已鎖定</span>
+    </div>`;
+  } else {
+    const used = totalPoints();
+    const left = 5 - used;
+    bar.innerHTML = `<div class="stat-points-bar">
+      <span>剩餘點數</span>
+      <span class="stat-points-left">${left}</span>
+      <span>/ 5</span>
+    </div>
+    ${used === 5 ? `<div class="stat-confirm-wrap">
+      <button class="btn btn-gold" style="width:100%" onclick="confirmStats()">✦ 確認分配，鎖定數值</button>
+    </div>` : ''}`;
+  }
+}
+
 function renderStats() {
+  const locked = state.char.statsLocked;
+  const used = totalPoints();
+  renderStatPointsBar();
+
+  const grid = document.getElementById('statsGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  const STAT_NAMES = { str:'力量', wis:'智慧', cha:'魅力' };
+
   ['str','wis','cha'].forEach(s => {
     const val = state.char.stats[s] || 0;
-    const idMap = { str:'Str', wis:'Wis', cha:'Cha' };
-    document.getElementById('stat' + idMap[s]).textContent = val;
-    const dots = document.getElementById('dots' + idMap[s]);
-    dots.innerHTML = '';
-    for (let i = 1; i <= 5; i++) {
-      const d = document.createElement('div');
-      d.className = 'stat-dot' + (i <= val ? ' filled' : '');
-      d.onclick = () => setStat(s, i);
-      dots.appendChild(d);
+    const box = document.createElement('div');
+    box.className = 'stat-box';
+
+    if (locked) {
+      // locked: show value + dots only, no arrows
+      let dotsHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        dotsHtml += `<div class="stat-dot${i <= val ? ' filled' : ''}"></div>`;
+      }
+      box.innerHTML = `
+        <div class="stat-main">
+          <div class="stat-name">${STAT_NAMES[s]}</div>
+          <div class="stat-value">${val}</div>
+          <div class="stat-dots">${dotsHtml}</div>
+        </div>`;
+    } else {
+      // unlocked: show arrows
+      const canUp = used < 5 && val < 5;
+      const canDown = val > 0;
+      box.innerHTML = `
+        <div class="stat-main">
+          <div class="stat-name">${STAT_NAMES[s]}</div>
+          <div class="stat-value">${val}</div>
+        </div>
+        <div class="stat-arrows">
+          <button class="stat-arrow" onclick="adjustStat('${s}', 1)" ${canUp ? '' : 'disabled'}>▲</button>
+          <button class="stat-arrow" onclick="adjustStat('${s}', -1)" ${canDown ? '' : 'disabled'}>▼</button>
+        </div>`;
     }
+    grid.appendChild(box);
   });
 }
 
-function setStat(stat, val) {
-  state.char.stats[stat] = (state.char.stats[stat] === val) ? val - 1 : val;
+function adjustStat(stat, delta) {
+  if (state.char.statsLocked) return;
+  const current = state.char.stats[stat] || 0;
+  const used = totalPoints();
+  const next = current + delta;
+  if (next < 0) return;
+  if (next > 5) return;
+  if (delta > 0 && used >= 5) { showToast('剩餘點數不足'); return; }
+  state.char.stats[stat] = next;
   renderStats();
   saveState();
+}
+
+function confirmStats() {
+  if (totalPoints() < 5) { showToast('請先分配完 5 點'); return; }
+  state.char.statsLocked = true;
+  saveState();
+  renderStats();
+  showToast('✦ 能力數值已鎖定');
 }
 
 function renderItems() {
