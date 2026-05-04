@@ -440,6 +440,49 @@ nav {
 .code-msg.success { color: #4a7a4a; }
 .code-msg.error { color: var(--red-seal); }
 
+/* BONUS POPUP */
+.bonus-popup-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(26,15,8,0.65);
+  z-index: 10002;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.bonus-popup-overlay.open { display: flex; animation: fadeIn 0.2s ease; }
+.bonus-popup {
+  background: var(--parchment);
+  border: 1px solid var(--gold);
+  border-radius: 2px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  max-width: 340px;
+  width: 100%;
+  padding: 24px;
+  text-align: center;
+  animation: slideUp 0.25s ease;
+}
+.bonus-popup-icon { font-size: 36px; margin-bottom: 10px; }
+.bonus-popup-title {
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+.bonus-popup-text {
+  font-size: 13px;
+  color: var(--ink-faded);
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+.bonus-stat-highlight {
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  color: var(--ink);
+  font-weight: bold;
+}
+
 /* SAVE CODE */
 .save-code-area {
   background: var(--parchment-dark);
@@ -1201,6 +1244,16 @@ nav {
   </div>
 </div>
 
+<!-- BONUS POPUP -->
+<div class="bonus-popup-overlay" id="bonusPopup">
+  <div class="bonus-popup">
+    <div class="bonus-popup-icon" id="bonusPopupIcon">📖</div>
+    <div class="bonus-popup-title" id="bonusPopupTitle">獲得資訊</div>
+    <div class="bonus-popup-text" id="bonusPopupText"></div>
+    <button class="btn btn-gold" style="width:100%" onclick="closeBonusPopup()">✦ 收下</button>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
@@ -1237,11 +1290,11 @@ const CODES = {
 };
 
 const CHAPTERS = [
-  { id: 1, title: '召喚儀式', unlocked: true },
-  { id: 2, title: '王國的騷亂', unlocked: false },
-  { id: 3, title: '鐵錘與感知', unlocked: false },
-  { id: 4, title: '出征', unlocked: false },
-  { id: 5, title: '通緝', unlocked: false },
+  { id: 1, title: '召喚儀式' },
+  { id: 2, title: '王國的騷亂' },
+  { id: 3, title: '鐵錘與感知' },
+  { id: 4, title: '出征' },
+  { id: 5, title: '通緝' },
 ];
 
 const STORY_CH1 = `你坐在桌前，依照規則書的指示，設置好了單人劇情戰役的最後一個關卡。
@@ -1529,7 +1582,8 @@ const BOOKS = {
 // ══════════════════════════════════════════════
 let state = {
   char: { name:'', desc:'', avatar:'', stats:{ str:0, wis:0, cha:0 }, items:[] },
-  progress: { ch1: { booksRead:[], done: false } },
+  bonusPoints: { wis:0, cha:0 },
+  progress: { ch1: { booksRead:[], done: false }, ch2: { task: 0, done: false } },
   usedCodes: []
 };
 
@@ -1628,7 +1682,7 @@ function renderStats() {
   if (!grid) return;
   grid.innerHTML = '';
 
-  const STAT_NAMES = { str:'力量', wis:'智慧', cha:'魅力' };
+  const STAT_NAMES = { str:'力量', wis:'智慧', cha:'影響力' };
 
   ['str','wis','cha'].forEach(s => {
     const val = state.char.stats[s] || 0;
@@ -1636,17 +1690,25 @@ function renderStats() {
     box.className = 'stat-box';
 
     if (locked) {
-      // locked: show value + dots only, no arrows
+      // locked: show value + dots, plus bonus arrow if applicable
       let dotsHtml = '';
       for (let i = 1; i <= 5; i++) {
         dotsHtml += `<div class="stat-dot${i <= val ? ' filled' : ''}"></div>`;
       }
+      const bonusKey = s === 'wis' ? 'wis' : s === 'cha' ? 'cha' : null;
+      const bonusLeft = bonusKey && state.bonusPoints ? (state.bonusPoints[bonusKey] || 0) : 0;
+      const bonusHtml = bonusLeft > 0 ? `
+        <div class="stat-arrows">
+          <button class="stat-arrow" onclick="applyBonus('${s}')" title="${bonusLeft} 點可分配">▲</button>
+        </div>` : '';
       box.innerHTML = `
         <div class="stat-main">
           <div class="stat-name">${STAT_NAMES[s]}</div>
           <div class="stat-value">${val}</div>
           <div class="stat-dots">${dotsHtml}</div>
-        </div>`;
+          ${bonusLeft > 0 ? `<div style="font-size:10px;color:var(--gold);margin-top:4px;letter-spacing:0.05em">+${bonusLeft} 可加點</div>` : ''}
+        </div>
+        ${bonusHtml}`;
     } else {
       // unlocked: show arrows
       const canUp = used < 5 && val < 5;
@@ -1663,6 +1725,21 @@ function renderStats() {
     }
     grid.appendChild(box);
   });
+}
+
+function applyBonus(stat) {
+  if (!state.bonusPoints) return;
+  const key = stat === 'wis' ? 'wis' : stat === 'cha' ? 'cha' : null;
+  if (!key) return;
+  const left = state.bonusPoints[key] || 0;
+  if (left <= 0) return;
+  const current = state.char.stats[stat] || 0;
+  if (current >= 10) { showToast('已達上限'); return; }
+  state.char.stats[stat] = current + 1;
+  state.bonusPoints[key] = left - 1;
+  saveState();
+  renderStats();
+  showToast(`✦ ${stat === 'wis' ? '智慧' : '影響力'} +1`);
 }
 
 function adjustStat(stat, delta) {
@@ -1815,25 +1892,37 @@ function redeemCode() {
 // ══════════════════════════════════════════════
 // MAP
 // ══════════════════════════════════════════════
+function isChapterDone(id) {
+  if (id === 1) return !!(state.progress.ch1 && state.progress.ch1.done);
+  if (id === 2) return !!(state.progress.ch2 && state.progress.ch2.done);
+  return false;
+}
+
+function isChapterUnlocked(id) {
+  if (id === 1) return true;
+  return isChapterDone(id - 1);
+}
+
 function renderMap() {
   const path = document.getElementById('chaptersPath');
   path.innerHTML = '';
   let completed = 0;
   CHAPTERS.forEach(ch => {
-    const done = ch.id === 1 && state.progress.ch1.done;
+    const done = isChapterDone(ch.id);
+    const unlocked = isChapterUnlocked(ch.id);
     if (done) completed++;
     const node = document.createElement('div');
     node.className = 'chapter-node' +
-      (ch.unlocked ? ' unlocked' : '') +
+      (unlocked ? ' unlocked' : '') +
       (done ? ' completed' : '');
     node.innerHTML = `
       <div class="chapter-circle">${done ? '✓' : ch.id}</div>
       <div class="chapter-info">
         <div class="chapter-num">第 ${ch.id} 章</div>
-        ${ch.unlocked ? `<div class="chapter-title-map">${ch.title}</div>` : ''}
-        <div class="chapter-status">${done ? '✦ 已完成' : ch.unlocked ? '▶ 點擊開始' : '🔒 尚未開放'}</div>
+        ${unlocked ? `<div class="chapter-title-map">${ch.title}</div>` : ''}
+        <div class="chapter-status">${done ? '✦ 已完成' : unlocked ? '▶ 點擊開始' : '🔒 尚未開放'}</div>
       </div>`;
-    if (ch.unlocked) node.onclick = () => openChapter(ch.id);
+    if (unlocked) node.onclick = () => openChapter(ch.id);
     path.appendChild(node);
   });
   const pct = Math.round(completed / CHAPTERS.length * 100);
@@ -1853,6 +1942,7 @@ function openChapter(id) {
   document.getElementById('page-story').classList.add('active');
   document.getElementById('storyChapterTitle').textContent = `第 ${id} 章｜${CHAPTERS[id-1].title}`;
   if (id === 1) renderChapter1();
+  if (id === 2) renderChapter2();
 }
 
 function backToMap() {
@@ -1997,29 +2087,73 @@ function closeBook() {
   openShelf(currentShelf);
 }
 
+const BOOK_BONUS = {
+  'A1': { stat:'wis', icon:'📜', title:'獲得有用的資訊', text:'你感覺自己獲得了一點有用的資訊。\n智慧 +1 點數待分配。' },
+  'C1': { stat:'wis', icon:'✨', title:'獲得有用的資訊', text:'你感覺自己獲得了一點有用的資訊。\n智慧 +1 點數待分配。' },
+  'A3': { stat:'cha', icon:'📋', title:'獲得說不上有用的資訊', text:'你感覺自己獲得了一點說不上有用的資訊。\n影響力 +1 點數待分配。' },
+  'B3': { stat:'cha', icon:'👁', title:'獲得說不上有用的資訊', text:'你感覺自己獲得了一點說不上有用的資訊。\n影響力 +1 點數待分配。' },
+};
+
 function markRead(bookId) {
   if (!state.progress.ch1.booksRead) state.progress.ch1.booksRead = [];
   if (state.progress.ch1.booksRead.includes(bookId)) { closeBook(); return; }
   if (state.progress.ch1.booksRead.length >= 3) { showToast('已達閱讀上限'); return; }
 
   state.progress.ch1.booksRead.push(bookId);
+
+  // Grant bonus point if applicable
+  const bonus = BOOK_BONUS[bookId];
+  if (bonus) {
+    if (!state.bonusPoints) state.bonusPoints = { wis:0, cha:0 };
+    state.bonusPoints[bonus.stat] = (state.bonusPoints[bonus.stat] || 0) + 1;
+  }
+
   saveState();
-  showToast('書籍閱讀完畢');
   renderLore();
 
-  if (state.progress.ch1.booksRead.length >= 3 && !state.progress.ch1.done) {
+  const complete = state.progress.ch1.booksRead.length >= 3 && !state.progress.ch1.done;
+  if (complete) {
     state.progress.ch1.done = true;
     saveState();
-    setTimeout(() => {
-      renderChapter1();
-      showToast('✦ 任務完成！線索已記錄');
-    }, 400);
+  }
+
+  // Show bonus popup, then continue
+  if (bonus) {
+    document.getElementById('bonusPopupIcon').textContent = bonus.icon;
+    document.getElementById('bonusPopupTitle').textContent = bonus.title;
+    document.getElementById('bonusPopupText').innerHTML =
+      bonus.text.replace('\n', '<br>') +
+      '<br><span class="bonus-stat-highlight">（前往冒險者頁面加點）</span>';
+    document.getElementById('bonusPopup').classList.add('open');
+    if (complete) {
+      document.getElementById('bonusPopup').dataset.complete = '1';
+    }
+    return;
+  }
+
+  if (complete) {
+    setTimeout(() => { renderChapter1(); showToast('✦ 任務完成！線索已記錄'); }, 400);
     return;
   }
 
   closeBook();
   closeShelf();
   renderChapter1();
+}
+
+function closeBonusPopup() {
+  const popup = document.getElementById('bonusPopup');
+  const wasComplete = popup.dataset.complete === '1';
+  popup.classList.remove('open');
+  popup.dataset.complete = '';
+  if (wasComplete) {
+    setTimeout(() => { renderChapter1(); showToast('✦ 任務完成！線索已記錄'); }, 400);
+  } else {
+    closeBook();
+    closeShelf();
+    renderChapter1();
+  }
+  renderStats();
 }
 
 function renderClues() {
@@ -2090,6 +2224,650 @@ function openLoreModal(bookId) {
 function closeLoreModal(e) {
   if (!e || e.target === document.getElementById('loreModal')) {
     document.getElementById('loreModal').classList.remove('open');
+  }
+}
+
+
+// ══════════════════════════════════════════════
+// CHAPTER 2 DATA
+// ══════════════════════════════════════════════
+const STORY_CH2_MAIN = `整理完圖書館地下書庫的第三天，你終於把最後一箱積灰的卷宗搬上了正確的書架。
+
+老魔法師站在旁邊，端著他那杯永遠不知道第幾泡的茶，若有所思地看著你拍手上的灰。
+
+「你今天不用來的。」他說。
+
+你看著他。
+
+「那我昨天呢？」
+
+「昨天也不用來。」他說，「但你來了，所以你幫了忙。這是兩件不同的事。」
+
+你覺得他說的有點道理，但又說不清楚哪裡有道理。
+
+就在這時，走廊外傳來一陣嘈雜聲。
+
+——
+
+嘈雜聲來自王城廣場的佈告欄。
+
+人群圍得水洩不通。你擠了進去，看見佈告欄上貼了一份新告示，落款是「勇者雷歐納多」，標題是：
+
+【強化法則之力　全民規則申報令】
+
+律師正式宣告，王國法則之力之所以持續崩潰，是因為規則過於「散亂」——每個人心中對規則的理解各異，沒有統一的標準，導致法則之力無從穩固。因此，他下令全國民眾，必須在三個月內，將日常生活中所接觸到的一切規則之力，以書面形式上報官方，由律師親自主持編纂，統一收錄進一部新的《艾爾德倫法則大典》。
+
+任何未登記的規則，一律視為「不合法之法則運用」，暫停使用，待審核通過後方可恢復。
+
+旁邊有個老農夫也正在讀，讀完之後轉頭問旁邊的人：「我耕田四十年，我怎麼知道我用了什麼規則？」
+
+旁邊的人搖搖頭，說他也不知道。
+
+你默默地又將告示讀了一遍。
+
+——
+
+接下來幾天，王城四處開始出現各式各樣奇怪的事情。
+
+王城最老牌的麵包師傅阿普，烤麵包四十年，從來沒有失誤過。他用的是一種祖傳的手法——他說不清楚那是什麼，只說「火要聽話，麵包才會好」。申報令下來之後，官方告訴他：「火之規則已登記，爐溫標準為三百二十度，請依標準操作。」第二天，阿普的麵包全部烤焦了。
+
+裁縫師梅莉剪布料從來不用尺，全憑眼力和手感。官方登記後告訴她：「標準裁剪誤差不得超過零點五分。」第二天，梅莉拿起剪刀，那把用了十五年的剪刀在她手裡突然變得很陌生。她哭了很久。
+
+守城衛兵老德守了二十年的門，他說他能感覺到誰有問題。他試了七次都沒辦法把這個寫成文字，官方最後給他一份標準核對清單。那天下午，幾個著裝整齊、持有有效證件、來路完全不明的陌生人走進了王城。老德當時感覺到了有問題，但他照著標準，沒有理由阻攔。幾天之後，王城發生了幾起治安事件。
+
+——
+
+你把這個感覺說給老魔法師聽。他放下茶杯，靜靜地聽你說完，然後問：
+
+「你覺得規則之力是什麼？」
+
+你想了一下，說：「讓事情按照應有的方式運作的力量？」
+
+老魔法師點了點頭，又問：「那麼，火的規則是什麼？」
+
+你說：「火會燃燒，會產生熱，需要燃料……」
+
+「阿普說火要聽話，」老魔法師打斷你，「梅莉說布料會告訴她往哪裡剪。他們說的規則，和你說的規則，是同一件事嗎？」
+
+你停了下來。
+
+「不一樣。」
+
+「對，」老魔法師說，「規則之力不是一本書。它更像是……」他停頓了一下，看了看窗外，「你見過河流嗎？每一條河都不一樣，有的急，有的緩，有的清，有的濁。你能把所有的河，寫進同一條規則裡嗎？」
+
+你沉默了。
+
+「那個律師，」老魔法師說，語氣很平靜，「他很聰明。他看見了法則之力在崩潰，他的方法，在他的那個世界，可能是對的。但艾爾德倫的規則之力，不是那樣運作的。」
+
+「那怎麼辦？」你問。
+
+老魔法師看著你，喝了口茶。
+
+「我老了，腰不好，這種事我做不來了。但我認識一個人，她可能有辦法。」
+
+——
+
+薇爾達在圖書館的後室等你。她的書桌上攤著一份手繪的地圖，標注了王城裡目前已知的混亂點，都用紅色小圓圈標出來了。
+
+她把情況說得很清楚：規則申報令推行之後，每一個「已登記的規則」在被統一標準化的瞬間，原本使用者和規則之力之間的個人連結就出現了衝突。
+
+「就像兩個人同時在拉同一條繩子，往不同的方向。」她說。
+
+「那怎麼解決？」
+
+「理論上，要讓每個人重新和自己的規則之力建立連結，而不是去遵從一個外來的標準版本。但需要有人能感應到每個地方的規則衝突點在哪裡。」
+
+她停了一下，然後看著你：
+
+「那天，你被召喚的時候，我見到你手上拿著一本書。那本書，應該也是某一種規則，對吧？」
+
+你點了點頭，但不是很確定。
+
+「我需要你去試試看。從這三個地方開始。」
+
+她把地圖推到你面前。
+
+——
+
+你帶著地圖，走進了王城的騷亂裡。
+
+第一站，你選了離圖書館最近的地方——一間鐵匠鋪。
+
+鋪子裡的老鐵匠正對著爐子發呆，旁邊的鐵砧上放著一把打了一半的鐵鍬，已經放了三天沒有動。申報令讓官方給他登記了「金屬鍛造規則——加熱至標準溫度，依規定次數捶打，冷卻後成型」。從那天起，他每次拿起鐵錘，都感覺哪裡不對。
+
+你拿出規則書，閉上眼睛，試著感應。書頁一動也不動，空白如故。
+
+你試了一會兒，沒有結果，正想放棄，準備去找下一個地方。
+
+就在你轉身的時候，老鐵匠拿起了那把放了三天的鐵錘，漫不經心地翻轉了一下，讓錘頭在掌心掂了掂重量。那是一個習慣動作，他自己可能都沒意識到。
+
+規則書突然動了。
+
+你低頭，看見書頁上緩緩浮現出一個圖案——是那把鐵錘的輪廓，線條清晰，像是有人用細筆一筆一筆描出來的。然後，文字浮現：
+
+「鐵識主人——三十年，兩萬七千次捶打，每一次的力道、角度、節奏，都是他摸索出來的經驗。」
+
+你盯著那段文字，一動也不動，直到它消失。
+
+規則書感應到的，不是鍛造的標準流程——是三十年，兩萬七千次，老鐵匠和那把鐵錘之間說不清楚、寫不出來、卻真實存在的連結。那是無法被寫進法典的東西。那才是規則之力真正的樣子。
+
+——
+
+你把看見的和想到的全部告訴薇爾達。
+
+她沉默了很長時間，然後說：「所以規則書感應到的，是他們和規則之力之間的個人連結本身。」
+
+「對，」你說，「而不是那個連結的內容。」
+
+薇爾達在地圖上的鐵匠鋪圓圈旁邊寫了一個字，然後把地圖推回給你。
+
+「你現在知道怎麼用了。」她說，「去找阿普、梅莉和老德吧。」`;
+
+const STORY_CH2_END = `薇爾達看著地圖上的標註，說：「速度比我預期的快。」
+
+老魔法師在旁邊喝茶，沒有說話，但你覺得他在微笑。
+
+你沒有提到，在這幾天裡，你的規則書偶爾會在某些時刻自動浮現文字——不是關於規則衝突的提示，而是一些你還讀不太懂的句子，幾秒後就消失，像是某個聲音在說話，但你還沒有學會怎麼聽。
+
+王城的申報令造成的混亂開始慢慢平息。
+
+不是靠更多的標準，而是靠讓每個人重新相信自己的感覺。
+
+你把薇爾達的地圖捲起來，放進口袋。
+
+地圖上還有幾個紅色的圓圈，但最難的三個，已經解決了。`;
+
+const CH2_TASKS = [
+  {
+    id: 'apu', name: '阿普的烤爐', icon: '🍞',
+    intro: `你推開麵包鋪的門，熱氣撲面而來。
+
+爐子還亮著，但烤盤是空的。阿普坐在角落的木凳上，手裡拿著官方發下來的規則文書與溫度計，翻來覆去地看，像是在找什麼答案。
+
+你說你是來幫忙的。他抬頭看了你一眼，嘆了口氣。
+
+「你也幫不了，」他說，「我照著官方標準，把爐溫控制在三百二十度，量了又量，但烤出來的東西就是不對。以前我不用溫度計，把手靠近爐口感覺一下就知道，但現在腦子裡一直跑出三百二十度這個數字……然後麵包就烤壞了。」
+
+他重重地將溫度計往桌上一放，發出一聲悶響。
+
+你低頭看了看規則書。書頁緩緩浮現文字，幾秒後消失：
+
+「規則之力共鳴於——感知的當下，非事後的驗證。」
+
+你把溫度計拿起來，放到一旁，說：「我們來試試別的方法。」`,
+    options: [
+      {
+        label: '🧠 開導', req: { stat:'wis', min:2 }, reqLabel:'需要智慧 ≥ 2',
+        story: `你把溫度計拿到他看不見的地方，然後說：
+
+「阿普，你烤麵包四十年，從來沒有失誤過。那四十年裡，你用過溫度計嗎？」
+
+「沒有。」
+
+「那你是怎麼知道可以放麵糰進去的？」
+
+他愣了一下，說：「就是……感覺對了。」
+
+「對，」你說，「三百二十度是別人告訴你的數字。『感覺對了』才是你的規則。官方登記的，是別人的翻譯，不是你的原文。」
+
+阿普皺著眉頭，沉默了很長時間。
+
+然後他站起來，走到爐子旁邊，把手靠近爐口。
+
+他沒有去看溫度計。他只是感覺。
+
+過了一會兒，他說：「火有點急，要再等一下。」
+
+他等了。然後他把麵糰放進去。
+
+那天的麵包，是這幾個月以來烤得最好的一批。
+
+阿普站在爐子旁邊，盯著烤盤看了很久，沒有說話。
+
+你悄悄把溫度計放回他的桌上。他可能以後還是會偶爾看一眼——但那沒關係，只要他知道，感覺才是真正的規則。`
+      },
+      {
+        label: '🎲 嘴砲', req: { stat:'cha', min:2 }, reqLabel:'需要影響力 ≥ 2',
+        story: `你靈機一動，想起了《農家樂》——那是一款你玩過的桌遊，裡面有一個烤麵包的動作。你清了清嗓子，打算用它來講一個有點牽強但也許有用的道理。
+
+「阿普，你聽說過《農家樂》這個遊戲嗎？」
+
+「沒有。」
+
+「裡面的農夫烤麵包，不是靠設定溫度計，而是一種更……全面的判斷。每一局的條件都不一樣，有時候要看你手上有什麼資源，有時候得看你接下來的策略，每次都要根據當下的情況做決定。」
+
+關於你的「遊戲術語」，阿普用一種看到瘋子的眼神看著你：「這和我的爐子有什麼關係？」
+
+「有！」你說，「遊戲裡的農夫如果每次烤麵包前都要先滿足同樣的條件，他永遠無法掌握最好的時機。他需要的是依據自己的經驗感受一切，並做出判斷。就像你以前靠手感一樣。」
+
+阿普沉默了很長時間。
+
+然後他說：「你是在用……遊戲裡的農夫來鼓勵我？」
+
+「對！」
+
+「……」
+
+他站起來，走到爐子旁邊，用一種你從未見過的、非常認真的表情，感覺了一下。
+
+「火有點急，」他說，「要再等一下。」
+
+那天的麵包沒有烤焦。
+
+事後阿普問你那個遊戲在哪裡買。你說你也不確定艾爾德倫有沒有賣，但你覺得他應該不需要它了。`
+      },
+      {
+        label: '🤝 身體力行', req: { stat:'str', min:2 }, reqLabel:'需要力量 ≥ 2',
+        story: `「我們一起烤一爐麵包，」你說，「就照你以前的方法。」
+
+阿普看著你：「你會烤麵包？」
+
+「不會，」你說，「但你會。你教我，我跟著你做。」
+
+他猶豫了一下，然後站起來。
+
+他沒有去拿溫度計。他走到爐子旁邊，把手靠近爐口。你也跟著走過去，感受那個熱度。
+
+「現在是什麼感覺？」你問。
+
+「火有點急，」他說，「要再等一下。」
+
+你們就站在那裡，等著。等了大概五分鐘，阿普說：「好了。」
+
+他把麵糰放進爐子，你發現他的動作和說話的方式都變了——不是那種盯著數字看的謹慎，而是一種說不清楚的、屬於他自己的節奏。
+
+烤好之後，你嚐了一口。
+
+是你這輩子吃過最好吃的麵包之一。
+
+你說：「阿普，你剛才有看溫度計嗎？」
+
+他愣了一下，說：「……沒有。」
+
+然後他笑了。是一個很小的微笑，但很真切。`
+      }
+    ]
+  },
+  {
+    id: 'meli', name: '梅莉的剪刀', icon: '✂️',
+    intro: `完成阿普的任務之後，你拿著薇爾達給的地圖，往下一個紅色圓圈走去。
+
+梅莉的裁縫鋪門開著，你進去的時候，她正拿著一把剪刀站在工作台前，對著一塊布，什麼都沒有做。
+
+你等了一會兒，她才發現你進來了。
+
+她說：「我在想該怎麼下刀。」
+
+你問她從申報令之後，發生了什麼事。
+
+她把剪刀放下，說：「官方給了標準，裁剪誤差不得超過零點五分。我試著用尺量，量完再剪，但每次我的手要動的時候，我會停下來想：這樣剪，誤差會不會超過？我需不需要先量一下？一旦我開始量，我的手就忘記了剛才要往哪裡剪去……」
+
+她盯著那塊布，說：「我剪了十五年的布。」
+
+停頓。
+
+「但現在我不敢相信自己的感覺了。」
+
+你低頭看了看規則書。書頁緩緩浮現文字，幾秒後消失：
+
+「規則之力共鳴於——流動的過程，非靜止的結果。」`,
+    options: [
+      {
+        label: '🧠 開導', req: { stat:'wis', min:2 }, reqLabel:'需要智慧 ≥ 2',
+        story: `「梅莉，你說你剪了十五年的布，你的手知道該怎麼動作。」
+
+她沉默，沒有反駁。
+
+「那個彷彿擁有自我意識的手，」你說，「它在量尺量完之後，是同一雙手嗎？」
+
+她皺眉：「什麼意思？」
+
+「量尺告訴你的，是靜止的結果——零點五分。但你的手工作的時候，一切是流動的。剪刀沿著布料走的每一毫米，都是一個當下的判斷，不是事先算好的數字。你現在做的，是先把流動凍結，然後測量它。」
+
+梅莉低頭看著那塊布，很久沒有說話。
+
+然後她拿起剪刀。
+
+她沒有去量。
+
+剪刀的聲音在工作台上響起來，一條流暢的線，從這頭走到那頭，沒有停。
+
+她剪完之後，你看著那條線——不是直線，是順著布料紋理走的線，有自己的節奏。
+
+「你剛才用尺測量了嗎？」你問。
+
+「沒有，」她說。
+
+然後她拿起尺，量了一下，說：「零點一分。」
+
+她把尺放下，沒有說話。但她的手，輕輕摸了摸那塊布，若有所思。`
+      },
+      {
+        label: '🎲 嘴砲', req: { stat:'cha', min:2 }, reqLabel:'需要影響力 ≥ 2',
+        story: `你想起了兩款遊戲，一款叫《洛可可》，一款叫《拼布藝術》。你決定都用上。
+
+「梅莉，你聽過《洛可可》嗎？是一款裁縫主題的桌遊，玩家設計禮服，要根據宴會主題、布料稀缺性、還有其他裁縫的競爭，當下決定每一步怎麼做。沒有人在剪布料之前先查零點五分的標準。」
+
+梅莉看著你，表情介於「這個人在說什麼」和「繼續說」之間。
+
+你繼續說：「還有一個遊戲叫《拼布藝術》，兩個玩家搶材料來拼成布料，遊戲中更重要的是材料與時間的掌握，而不是誤差標準。」
+
+「……所以？」
+
+「所以，」你說，「世界上最好的裁縫，不是量得最準的，是感覺最好的。官方的零點五分，是給那些還沒有練習十五年的人設的底線，但這不是對你的限制，你早已將這樣的感覺內化了。」
+
+梅莉盯著你看了五秒鐘。
+
+然後她拿起剪刀，開始剪。
+
+沒有測量。
+
+剪完之後，她才去用尺量了一下，說：「零點一分。」
+
+你點點頭，準備說「果然如此」之類的話。
+
+她說：「你剛才說的那兩個遊戲，我可以在哪裡買？」
+
+你說你也不確定艾爾德倫有沒有賣。
+
+她說：「好吧，但如果找到了，告訴我一聲。」
+
+你的內心突然冒出一個邪惡的想法：如果你把這些遊戲帶回艾爾德倫來賣的話，是不是就能……
+
+你用力拍了拍自己的頭，把這個想法趕出去，重振精神，前往下一個任務。`
+      },
+      {
+        label: '🤝 身體力行', req: { stat:'str', min:2 }, reqLabel:'需要力量 ≥ 2',
+        story: `「我們來嘗試一件事，」你說，「把量尺放到一旁，然後你教我剪布。」
+
+梅莉看著你，很懷疑：「你學會剪布就會有用了嗎？」
+
+「可能沒用，也可能我學不會，」你說，「但我們試試看嘛。」
+
+她將剪刀遞給你。
+
+你站在一匹布前，將剪刀緊緊握在手裡。
+
+梅莉看著你僵硬的手，輕聲提醒你：「放輕鬆，將剪刀當作是手的延伸，然後……」
+
+她沒有再說下去，轉身又拿起了另一把剪刀。
+
+剪刀的聲音很清脆，她沒有猶豫地對著布剪了一刀。
+
+剪完之後，梅莉低頭看那條線。
+
+你把量尺遞給她。她測量了一下，說：「零點二分。」
+
+然後她又量了一次，說：「還是零點二分。」
+
+她把量尺放到一邊，又剪了一刀，沒有停。然後又一刀。
+
+你在旁邊坐著，看她剪了整整半個下午的布。
+
+後來你問她：「你有沒有注意到什麼時候你的手自己動起來了？」
+
+她想了一下，眼睛發著光。
+
+你點點頭，將量尺輕輕放回她的工作台上。
+
+當你站起來準備離開時，梅莉走過了工作台，給了你一個深深的擁抱。
+
+你愣了一下，然後想起來，她說她剪了十五年的布。十五年。
+
+有些事情，不需要說出來。`
+      }
+    ]
+  },
+  {
+    id: 'dete', name: '老德的城門', icon: '🏰',
+    intro: `完成梅莉的任務之後，你走向地圖上最後一個紅色圓圈——城門。
+
+你在城門旁邊的崗亭外找到老德。
+
+他站在那裡，但眼睛沒有在看來往的人。他的目光落在某個不存在的地方，你叫了他兩聲才回神。
+
+你說你是來幫忙的。他說了一句「幫不了」，然後沉默了很長時間。
+
+「他們走過來的時候，我感覺到有問題，」老德說，「守了二十年城門，我知道那種感覺是什麼。但我看了看他們的證件，看了看著裝，告訴自己，標準上沒有問題，我不能靠感覺攔人。所以我讓他們進去了。後來出了事。」
+
+他停頓了很長時間。
+
+「那是我的錯。」
+
+你低頭看了看規則書。書頁緩緩浮現文字，幾秒後消失：
+
+「規則之力共鳴於——直接的感知，非事後的推論。」`,
+    options: [
+      {
+        label: '🧠 開導', req: { stat:'wis', min:2 }, reqLabel:'需要智慧 ≥ 2',
+        story: `「老德，我問你一件事，」你說，「那天，在你看到他們的證件之前，你的感覺是什麼？」
+
+「有問題，」他說，「就是有問題。」
+
+「那在你看到證件之後，你的感覺是什麼？」
+
+他沉默了。
+
+「還是有問題，」他說，「但我告訴自己，標準說沒問題。」
+
+「那是兩件不同的事，」你說，「感覺說有問題，是你守了二十年城門的規則之力在說話。標準說沒問題，是官方的文件在說話。你那天選擇相信了文件，沒有相信規則之力。這不是你的錯，是申報令讓你以為這兩件事必須選一個。」
+
+老德看著你，臉上的表情沒有改變，但眼神變了一點。
+
+「那我以後應該不管標準，靠感覺攔人？」
+
+「不，」你說，「標準是標準，感覺是感覺，兩個都要有。標準是起點，感覺是判斷。標準說可以放行，但你的感覺說有問題——那個有問題，值得你多問一句話。就一句就夠。」
+
+老德沉默了很長時間。
+
+然後他說：「多問一句話。」
+
+你說：「對。」
+
+那天下午，老德攔下了一個所有證件都合格、著裝也整齊的商人，多問了一句：「你的貨從哪裡來？」
+
+商人的眼神閃了一下。
+
+後來查出來，那批貨裡有走私的魔王軍物資。
+
+你回去的時候，老德沒有說謝謝，他只是給了你一個眼神。
+
+你能感覺到那個眼神，和早上你來的時候已經不一樣了。`
+      },
+      {
+        label: '🎲 嘴砲', req: { stat:'cha', min:2 }, reqLabel:'需要影響力 ≥ 2',
+        story: `你想到了一款叫《Micro Macro Crime City》的遊戲。
+
+「老德，你聽過《Micro Macro Crime City》嗎？」
+
+「沒有。」
+
+「這是一個偵探遊戲，玩家在遊戲中會獲得提示，然後他們必須依靠自己的眼力，找出犯罪的真相。」
+
+老德看著你，表情沒什麼變化。
+
+「你的感覺，」你繼續說，「就像是遊戲中的提示。這不是偏見，不是猜測，而是二十年來每一個過城門的人，留給你的資料。官方的標準是新來的，你所掌握的資料比它可靠多了。」
+
+沉默。
+
+「……你是拿遊戲來跟我說道理？」
+
+「是的，」你說，「但道理是共通的。」
+
+老德盯著你看了一會兒，然後轉身，站回了崗亭旁邊。
+
+下一個進城的人，他照例查了證件，然後多問了一句：「你今天打算去哪裡？」
+
+那個人說了個地址，老德點點頭，放行了。但他的眼神在那個人背影上多停了一秒。
+
+那天下午，有一個他「感覺有問題」的人，被他攔下來多問了幾句，然後被移交給了內衛調查。後來查出那個人確實有問題。
+
+你後來再去城門的時候，老德還是那個老德，還是一樣的表情，一樣站在那裡。
+
+但你知道他現在信任自己的感覺了。`
+      },
+      {
+        label: '🤝 身體力行', req: { stat:'str', min:2 }, reqLabel:'需要力量 ≥ 2',
+        story: `「我陪你站一個時辰，」你說，「就站在這裡，你看什麼，我也看。」
+
+老德看著你：「你要做什麼？」
+
+「什麼都不做，就站著。」
+
+他沉默了一下，然後說：「隨你。」
+
+你們就站在城門旁邊，看著來來往往的人。
+
+十幾分鐘後，你問：「我覺得這些人看起來，都沒什麼問題？」
+
+老德的視線掃過前方的隊伍，說：「那個推著貨車的是老主顧，沒問題。後面那個趕路的旅人很累，不像是要搞事的。再後面那個……」
+
+他停頓了一下。
+
+「那個東張西望的年輕人，不確定。」
+
+「他人看起來不壞呀？」你說。
+
+老德猶豫了一下，走了過去。
+
+那個年輕人是從邊境逃來的難民，沒有完整的通行文件，有點緊張，所以東張西望。老德問了幾句，判斷不是壞人，讓他以訪客身份登記入城，並交代他盡快補辦正式文件。
+
+老德回來的時候，表情比之前輕鬆了一些。
+
+「標準是標準，」他說，「但標準也是空洞的。」
+
+你在地圖上把他的圓圈從紅色改成了綠色。
+
+然後你站在那裡，陪老德又站了半個時辰。沒有人再說什麼，你們就這樣一起看著來往的人。
+
+有時候老德會說一句「那個沒問題」，有時候說「那個要多看一下」。你什麼都不說，只是聽著。
+
+後來你問：「你今天有沒有因為感覺出錯過？」
+
+他想了一下，說：「沒有。」
+
+你說：「那就是了。」
+
+他沒有回答，但你覺得老德又找回了他的自信。`
+      }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════
+// CHAPTER 2 RENDER
+// ══════════════════════════════════════════════
+function renderChapter2() {
+  const sc = document.getElementById('storyContent');
+  const task = (state.progress.ch2 && state.progress.ch2.task) || 0;
+  const done = state.progress.ch2 && state.progress.ch2.done;
+
+  if (done) {
+    sc.innerHTML = `
+      <div class="story-body">
+        <div class="story-text">${STORY_CH2_MAIN}</div>
+      </div>
+      <div class="mission-section">
+        <div class="section-title">✦ 任務完成</div>
+        <div class="mission-complete visible">
+          <div class="complete-seal">📜</div>
+          <div class="complete-title">第二章任務完成</div>
+          <div class="complete-text">${STORY_CH2_END}</div>
+          <button class="btn btn-gold" onclick="backToMap()">返回旅程地圖</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const currentTask = CH2_TASKS[task];
+  const stats = state.char.stats || {};
+
+  sc.innerHTML = `
+    <div class="story-body">
+      <div class="story-text">${task === 0 ? STORY_CH2_MAIN : ''}</div>
+    </div>
+    <div class="mission-section">
+      <div class="section-title">✦ 任務 ${task + 1} / 3｜${currentTask.icon} ${currentTask.name}</div>
+      <div id="ch2TaskContent"></div>
+    </div>`;
+
+  renderCh2Task(currentTask, stats);
+}
+
+function renderCh2Task(task, stats) {
+  const el = document.getElementById('ch2TaskContent');
+  if (!el) return;
+
+  // Show intro + options
+  el.innerHTML = `
+    <div class="story-text" style="margin-bottom:20px">${task.intro}</div>
+    <div class="ornament">— ✦ —</div>
+    <p style="font-size:12px;color:var(--ink-light);margin:12px 0 14px;letter-spacing:0.05em">選擇你的處理方式：</p>
+    <div style="display:flex;flex-direction:column;gap:10px" id="ch2Options"></div>`;
+
+  const optEl = document.getElementById('ch2Options');
+  task.options.forEach((opt, idx) => {
+    const req = opt.req;
+    const statVal = req ? (stats[req.stat] || 0) : 999;
+    const locked = req && statVal < req.min;
+    const btn = document.createElement('div');
+    btn.className = 'book-item' + (locked ? ' read' : '');
+    btn.style.cssText = 'cursor:' + (locked ? 'default' : 'pointer') + ';';
+    btn.innerHTML = `
+      <div class="book-info">
+        <div class="book-title" style="font-size:14px">${opt.label.replace(/^[\p{Emoji}\s]+/u, '').trim()}</div>
+        ${req ? `<div class="book-hint" style="font-size:11px;color:var(--ink-light)">${opt.reqLabel}</div>` : ''}
+      </div>
+      ${locked ? `<span class="book-badge" style="background:rgba(90,62,43,0.1);color:var(--ink-light);border:1px solid var(--parchment-deep);font-size:9px;padding:2px 6px">🔒 未達門檻</span>` : ''}`;
+    if (!locked) btn.onclick = () => showCh2Result(task, idx);
+    optEl.appendChild(btn);
+  });
+}
+
+function showCh2Result(task, optIdx) {
+  const el = document.getElementById('ch2TaskContent');
+  if (!el) return;
+  const opt = task.options[optIdx];
+  const taskIdx = CH2_TASKS.findIndex(t => t.id === task.id);
+  const isLast = taskIdx === CH2_TASKS.length - 1;
+  const optLabel = opt.label.replace(/^[\p{Emoji}\s]+/u, '').trim();
+
+  el.innerHTML = `
+    <div class="story-text" style="margin-bottom:20px">${task.intro}</div>
+    <div class="ornament">— ✦ —</div>
+    <p style="font-size:11px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 8px">✦ ${optLabel}</p>
+    <div class="story-text" style="margin-bottom:20px">${opt.story}</div>
+    <div class="reader-actions" style="margin-top:16px">
+      <button class="btn btn-gold" onclick="completeCh2Task(${taskIdx})">
+        ${isLast ? '✦ 完成任務' : '✦ 繼續下一個任務'}
+      </button>
+    </div>`;
+}
+
+function completeCh2Task(taskIdx) {
+  if (!state.progress.ch2) state.progress.ch2 = { task: 0, done: false };
+  const next = taskIdx + 1;
+  if (next >= CH2_TASKS.length) {
+    state.progress.ch2.done = true;
+    state.progress.ch2.task = next;
+    saveState();
+    renderChapter2();
+    showToast('✦ 第二章完成！');
+  } else {
+    state.progress.ch2.task = next;
+    saveState();
+    // Show next task
+    const sc = document.getElementById('storyContent');
+    const nextTask = CH2_TASKS[next];
+    const stats = state.char.stats || {};
+    sc.innerHTML = `
+      <div class="story-body"></div>
+      <div class="mission-section">
+        <div class="section-title">✦ 任務 ${next + 1} / 3｜${nextTask.icon} ${nextTask.name}</div>
+        <div id="ch2TaskContent"></div>
+      </div>`;
+    renderCh2Task(nextTask, stats);
+    sc.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 
