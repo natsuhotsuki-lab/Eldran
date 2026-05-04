@@ -1273,6 +1273,21 @@ nav {
   </div>
 </div>
 
+<!-- FREE POINTS POPUP (post Chapter 2) -->
+<div class="bonus-popup-overlay" id="freePointsPopup">
+  <div class="bonus-popup">
+    <div class="bonus-popup-icon">⚜️</div>
+    <div class="bonus-popup-title">第二章完成</div>
+    <div class="bonus-popup-text">
+      你的判斷與行動為自己贏得了一些事物——<br>
+      <span class="bonus-stat-highlight">獲得 <span id="freePointsAmount">1</span> 點自由屬性點</span><br>
+      可分配到任何一項能力（力量／智慧／影響力）。<br>
+      <span style="font-size:11px;color:var(--ink-light)">前往冒險者頁面以方向鍵調整，確認後即生效。</span>
+    </div>
+    <button class="btn btn-gold" style="width:100%" onclick="closeFreePointsPopup()">✦ 前往分配</button>
+  </div>
+</div>
+
 <!-- CONFIRM MODAL -->
 <div class="confirm-overlay" id="confirmOverlay">
   <div class="confirm-box">
@@ -1705,7 +1720,7 @@ const BOOKS = {
 // ══════════════════════════════════════════════
 let state = {
   char: { name:'', desc:'', avatar:'', stats:{ str:0, wis:0, cha:0 }, items:[] },
-  bonusPoints: { wis:0, cha:0 },
+  bonusPoints: { wis:0, cha:0, free:0 },
   progress: { ch1: { booksRead:[], done: false }, ch2: { task: 0, done: false } },
   usedCodes: []
 };
@@ -1777,6 +1792,22 @@ function renderStatPointsBar() {
   const bar = document.getElementById('statPointsBar');
   if (!bar) return;
   const locked = state.char.statsLocked;
+  // Free-allocation mode (after chapter 2): a snapshot exists in statsBeforeFree
+  if (locked && state.char.statsBeforeFree) {
+    const free = (state.bonusPoints && state.bonusPoints.free) || 0;
+    const totalGranted = freePointsGranted();
+    bar.innerHTML = `<div class="stat-points-bar" style="border-color:var(--gold);background:rgba(196,168,74,0.08)">
+      <span>✦ 自由屬性點待分配</span>
+      <span class="stat-points-left">${free}</span>
+      <span>/ ${totalGranted}</span>
+    </div>
+    <div class="stat-confirm-wrap">
+      <button class="btn btn-gold" style="width:100%" onclick="confirmFreeStats()" ${free > 0 ? 'disabled' : ''}>
+        ${free > 0 ? `還有 ${free} 點未分配` : '✦ 確認分配'}
+      </button>
+    </div>`;
+    return;
+  }
   if (locked) {
     bar.innerHTML = `<div class="stat-points-bar">
       <span>能力數值已確認分配</span>
@@ -1796,6 +1827,19 @@ function renderStatPointsBar() {
   }
 }
 
+// Total free points originally granted in this batch (pool + already-allocated since snapshot)
+function freePointsGranted() {
+  if (!state.char.statsBeforeFree) return 0;
+  const pool = (state.bonusPoints && state.bonusPoints.free) || 0;
+  const before = state.char.statsBeforeFree;
+  const cur = state.char.stats || {};
+  let allocated = 0;
+  for (const k of ['str','wis','cha']) {
+    allocated += Math.max(0, (cur[k] || 0) - (before[k] || 0));
+  }
+  return pool + allocated;
+}
+
 function renderStats() {
   const locked = state.char.statsLocked;
   const used = totalPoints();
@@ -1807,19 +1851,46 @@ function renderStats() {
 
   const STAT_NAMES = { str:'力量', wis:'智慧', cha:'影響力' };
 
+  const inFreeMode = locked && !!state.char.statsBeforeFree;
+  const freePool = (state.bonusPoints && state.bonusPoints.free) || 0;
+
   ['str','wis','cha'].forEach(s => {
     const val = state.char.stats[s] || 0;
     const box = document.createElement('div');
     box.className = 'stat-box';
 
-    if (locked) {
+    if (inFreeMode) {
+      // Free-allocation mode: ▲▼ on every stat, baseline = statsBeforeFree
+      const baseline = (state.char.statsBeforeFree && state.char.statsBeforeFree[s]) || 0;
+      const canUp = freePool > 0 && val < 10;
+      const canDown = val > baseline;
+      let dotsHtml = '';
+      const dotCount = Math.min(5, val);
+      for (let i = 1; i <= 5; i++) {
+        dotsHtml += `<div class="stat-dot${i <= dotCount ? ' filled' : ''}"></div>`;
+      }
+      const overflow = val > 5 ? ` <span style="font-size:10px;color:var(--gold);letter-spacing:0.05em">+${val-5}</span>` : '';
+      box.innerHTML = `
+        <div class="stat-main">
+          <div class="stat-name">${STAT_NAMES[s]}</div>
+          <div class="stat-value">${val}</div>
+          <div class="stat-dots">${dotsHtml}</div>
+          ${overflow ? `<div style="margin-top:4px">${overflow}</div>` : ''}
+        </div>
+        <div class="stat-arrows">
+          <button class="stat-arrow" onclick="adjustFreeStat('${s}', 1)" ${canUp ? '' : 'disabled'}>▲</button>
+          <button class="stat-arrow" onclick="adjustFreeStat('${s}', -1)" ${canDown ? '' : 'disabled'}>▼</button>
+        </div>`;
+    } else if (locked) {
       // locked: show value + dots, plus bonus arrow if applicable
       let dotsHtml = '';
+      const dotCount = Math.min(5, val);
       for (let i = 1; i <= 5; i++) {
-        dotsHtml += `<div class="stat-dot${i <= val ? ' filled' : ''}"></div>`;
+        dotsHtml += `<div class="stat-dot${i <= dotCount ? ' filled' : ''}"></div>`;
       }
       const bonusKey = s === 'wis' ? 'wis' : s === 'cha' ? 'cha' : null;
       const bonusLeft = bonusKey && state.bonusPoints ? (state.bonusPoints[bonusKey] || 0) : 0;
+      const overflow = val > 5 ? ` <span style="font-size:10px;color:var(--gold);letter-spacing:0.05em">+${val-5}</span>` : '';
       const bonusHtml = bonusLeft > 0 ? `
         <div class="stat-arrows">
           <button class="stat-arrow" onclick="applyBonus('${s}')" title="${bonusLeft} 點可分配">▲</button>
@@ -1829,6 +1900,7 @@ function renderStats() {
           <div class="stat-name">${STAT_NAMES[s]}</div>
           <div class="stat-value">${val}</div>
           <div class="stat-dots">${dotsHtml}</div>
+          ${overflow ? `<div style="margin-top:4px">${overflow}</div>` : ''}
           ${bonusLeft > 0 ? `<div style="font-size:10px;color:var(--gold);margin-top:4px;letter-spacing:0.05em">+${bonusLeft} 可加點</div>` : ''}
         </div>
         ${bonusHtml}`;
@@ -1863,6 +1935,68 @@ function applyBonus(stat) {
   saveState();
   renderStats();
   showToast(`✦ ${stat === 'wis' ? '智慧' : '影響力'} +1`);
+}
+
+// Free attribute points (granted after Chapter 2): can go to any stat,
+// adjustable until user confirms
+function adjustFreeStat(stat, delta) {
+  if (!state.char.statsBeforeFree) return;
+  if (!state.bonusPoints) state.bonusPoints = { wis:0, cha:0, free:0 };
+  const baseline = state.char.statsBeforeFree[stat] || 0;
+  const cur = state.char.stats[stat] || 0;
+  const pool = state.bonusPoints.free || 0;
+  if (delta > 0) {
+    if (pool <= 0) return;
+    if (cur >= 10) { showToast('已達上限'); return; }
+    state.char.stats[stat] = cur + 1;
+    state.bonusPoints.free = pool - 1;
+  } else {
+    if (cur <= baseline) return;
+    state.char.stats[stat] = cur - 1;
+    state.bonusPoints.free = pool + 1;
+  }
+  saveState();
+  renderStats();
+}
+
+function confirmFreeStats() {
+  if (!state.char.statsBeforeFree) return;
+  const pool = (state.bonusPoints && state.bonusPoints.free) || 0;
+  if (pool > 0) { showToast(`還有 ${pool} 點未分配`); return; }
+  delete state.char.statsBeforeFree;
+  saveState();
+  renderStats();
+  showToast('✦ 自由屬性點已分配完成');
+}
+
+function grantFreePoints(amount) {
+  if (!state.bonusPoints) state.bonusPoints = { wis:0, cha:0, free:0 };
+  if (state.bonusPoints.free === undefined) state.bonusPoints.free = 0;
+  state.bonusPoints.free += amount;
+  // Snapshot current stats so ▼ can never undo below the pre-grant baseline
+  if (!state.char.statsBeforeFree) {
+    state.char.statsBeforeFree = {
+      str: state.char.stats.str || 0,
+      wis: state.char.stats.wis || 0,
+      cha: state.char.stats.cha || 0
+    };
+  }
+  saveState();
+}
+
+function showFreePointsPopup(amount) {
+  const popup = document.getElementById('freePointsPopup');
+  if (!popup) return;
+  document.getElementById('freePointsAmount').textContent = amount;
+  popup.classList.add('open');
+}
+
+function closeFreePointsPopup() {
+  const popup = document.getElementById('freePointsPopup');
+  if (popup) popup.classList.remove('open');
+  // After closing, jump to character page so user immediately sees the arrows
+  switchTab('char');
+  renderChar();
 }
 
 function adjustStat(stat, delta) {
@@ -2967,15 +3101,26 @@ function showCh2Result(task, optIdx) {
     </div>`;
 }
 
+const CH2_FREE_POINTS = 1;  // Free attribute points granted after Chapter 2
+
 function completeCh2Task(taskIdx) {
   if (!state.progress.ch2) state.progress.ch2 = { task: 0, done: false };
   const next = taskIdx + 1;
   if (next >= CH2_TASKS.length) {
+    const firstTime = !state.progress.ch2.done && !state.progress.ch2.freeGranted;
     state.progress.ch2.done = true;
     state.progress.ch2.task = next;
+    if (firstTime) {
+      state.progress.ch2.freeGranted = true;
+      grantFreePoints(CH2_FREE_POINTS);
+    }
     saveState();
     renderChapter2();
-    showToast('✦ 第二章完成！');
+    if (firstTime) {
+      showFreePointsPopup(CH2_FREE_POINTS);
+    } else {
+      showToast('✦ 第二章完成！');
+    }
   } else {
     state.progress.ch2.task = next;
     saveState();
