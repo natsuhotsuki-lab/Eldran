@@ -1048,6 +1048,89 @@ nav {
   border-radius: 2px;
 }
 
+/* ACHIEVEMENTS */
+.achievement-item {
+  background: var(--parchment-dark);
+  border: 1px solid var(--parchment-deep);
+  border-radius: 2px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.35;
+  transition: opacity 0.4s, border-color 0.3s;
+}
+.achievement-item.unlocked {
+  opacity: 1;
+  border-color: var(--gold);
+}
+.achievement-item-icon { font-size: 18px; flex-shrink: 0; }
+.achievement-item-name {
+  font-size: 13px;
+  color: var(--ink);
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+}
+.achievement-chapter-label {
+  font-size: 11px;
+  color: var(--ink-light);
+  letter-spacing: 0.1em;
+  margin: 4px 0 8px;
+}
+
+/* ACHIEVEMENT GROUPS（章節分組：展開／收合） */
+.ach-group-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: var(--parchment-deep);
+  border: 1px solid var(--parchment-deep);
+  border-radius: 2px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s;
+}
+.ach-group-header:hover { border-color: var(--gold); }
+.ach-group-arrow { font-size: 10px; color: var(--ink-light); width: 14px; flex-shrink: 0; }
+.ach-group-title { flex: 1; font-size: 12px; letter-spacing: 0.1em; color: var(--ink); }
+.ach-group-count { font-size: 11px; color: var(--gold); letter-spacing: 0.05em; flex-shrink: 0; }
+.ach-group-body { margin: 2px 0 12px; }
+.ach-toggle-row { display: flex; justify-content: flex-end; margin: 2px 0 8px; }
+.ach-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--parchment-deep);
+  border-radius: 2px;
+  font-family: 'Noto Serif TC', serif;
+  font-size: 10px;
+  color: var(--ink-light);
+  padding: 4px 10px;
+  cursor: pointer;
+  letter-spacing: 0.08em;
+  transition: all 0.2s;
+}
+.ach-toggle-btn:hover { border-color: var(--gold); color: var(--ink); }
+.ach-empty {
+  font-size: 11px;
+  color: var(--ink-light);
+  font-style: italic;
+  text-align: center;
+  padding: 12px;
+  border: 1px dashed var(--parchment-deep);
+  border-radius: 2px;
+  margin-bottom: 6px;
+}
+.ach-future-hint {
+  font-size: 10px;
+  color: var(--ink-light);
+  text-align: center;
+  letter-spacing: 0.1em;
+  margin-top: 10px;
+  opacity: 0.7;
+}
+
 /* LORE MODAL */
 .lore-modal-overlay {
   display: none;
@@ -1150,17 +1233,422 @@ nav {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ══════════════════════════════════════════════
+   V2 主題:墨綠議事廳(方案 B)
+   多層厚框、牌匾標題、硬邊陰影、立體按鈕 + 全站字級調整
+   (覆寫層:寫在最後,蓋過上方同名規則)
+   ══════════════════════════════════════════════ */
+:root {
+  --frame-dark: #232b18;
+  --frame-mid:  #4a5a32;
+  --frame-hi:   #66783f;
+}
+
+/* ── 大外框 ── */
+.cover {
+  overflow: visible;
+  border: 3px solid var(--frame-dark);
+  border-radius: 0;
+  box-shadow:
+    0 0 0 8px var(--frame-mid),
+    0 0 0 11px var(--frame-dark),
+    8px 12px 0 rgba(0,0,0,0.35);
+}
+.cover::before {
+  inset: 7px;
+  border: 1px solid var(--gold);
+  opacity: 0.45;
+  z-index: 1;
+}
+.cover::after { content: none; }
+
+.cover-corner {
+  position: absolute;
+  width: 22px; height: 22px;
+  background: var(--frame-mid);
+  border: 3px solid var(--frame-dark);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold-light);
+  font-size: 11px;
+  z-index: 3;
+  pointer-events: none;
+}
+.cover-corner.tl { top: -14px; left: -14px; }
+.cover-corner.tr { top: -14px; right: -14px; }
+.cover-corner.bl { bottom: -14px; left: -14px; }
+.cover-corner.br { bottom: -14px; right: -14px; }
+
+/* ── 標題區 ── */
+.journal-title {
+  text-shadow: 1px 1px 0 rgba(255,255,255,0.55), 2px 2px 0 rgba(90,62,43,0.25);
+}
+.header-rule {
+  display: flex; align-items: center; gap: 10px;
+  margin: 14px auto 0; max-width: 420px;
+  color: var(--gold); font-size: 11px;
+}
+.header-rule::before, .header-rule::after {
+  content: ''; flex: 1; height: 3px;
+  border-top: 1px solid var(--gold);
+  border-bottom: 1px solid var(--gold);
+  opacity: 0.5;
+}
+
+/* ── 頁籤(牌匾式)── */
+nav {
+  border-bottom: none;
+  gap: 10px;
+  justify-content: center;
+  padding: 18px 20px 8px;
+}
+.nav-tab {
+  flex: 0 1 auto;
+  font-size: 14px;
+  padding: 9px 22px;
+  background: var(--parchment-dark);
+  color: var(--ink-faded);
+  border: 2px solid var(--ink);
+  box-shadow: 0 3px 0 var(--ink), 2px 5px 0 rgba(0,0,0,0.2);
+  transition: all .12s;
+}
+.nav-tab:hover { background: var(--parchment-dark); color: var(--ink); transform: translateY(-1px); }
+.nav-tab.active {
+  background: var(--frame-mid);
+  color: var(--parchment);
+  border: 2px solid var(--ink);
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.4);
+  box-shadow: 0 3px 0 var(--ink), 2px 5px 0 rgba(0,0,0,0.2), inset 0 0 0 1px var(--gold-light);
+}
+.nav-tab .tab-icon { display: inline; font-size: 15px; margin: 0 6px 0 0; }
+
+/* ── 區塊標題(牌匾)── */
+.section-title {
+  display: table;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--ink);
+  text-transform: none;
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.2), inset 0 0 0 1px var(--gold);
+  margin: 0 auto 22px;
+  padding: 6px 18px;
+  text-align: center;
+}
+
+/* ── 能力數值 ── */
+.stats-grid { gap: 14px; }
+.stat-box {
+  background: var(--parchment);
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: inset 0 -4px 0 rgba(154,123,47,0.18), 2px 3px 0 rgba(0,0,0,0.15);
+  padding: 13px 10px;
+}
+.stat-name { font-size: 12px; color: var(--ink-faded); letter-spacing: 0.18em; margin-bottom: 5px; }
+.stat-value { font-size: 32px; }
+.stat-dot { border-radius: 0; transform: rotate(45deg); }
+.stat-arrow {
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 0 2px 0 var(--ink-light);
+  font-size: 13px;
+}
+.stat-arrow:hover:not(:disabled) { box-shadow: 0 2px 0 var(--gold); }
+.stat-arrow:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+.stat-arrow:disabled { box-shadow: none; }
+
+.stat-points-bar {
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.12);
+  font-size: 13px;
+}
+.stat-points-left { font-size: 20px; }
+.stat-locked-badge { font-size: 11px; }
+
+/* ── 道具欄 ── */
+.item-slot {
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  background: var(--parchment);
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.12);
+  font-size: 13px;
+}
+.item-slot.empty { border: 2px dashed var(--parchment-deep); box-shadow: none; background: var(--parchment-dark); font-size: 12px; }
+.item-slot .item-desc { font-size: 12px; }
+.item-tag { font-size: 11px; }
+
+/* ── 輸入與代碼 ── */
+.field-label { font-size: 12px; }
+.char-desc { font-size: 13px; border: 2px solid var(--parchment-deep); border-radius: 0; }
+.code-area, .save-code-area {
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.12);
+}
+.code-input { border: 2px solid var(--parchment-deep); border-radius: 0; }
+.code-msg { font-size: 12px; }
+.save-hint { font-size: 12px; }
+.save-code-display { border: 2px solid var(--parchment-deep); border-radius: 0; }
+
+/* ── 按鈕 ── */
+.btn {
+  font-size: 14px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  background: var(--ink);
+  color: var(--parchment);
+  box-shadow: 0 4px 0 #150a04, 2px 6px 0 rgba(0,0,0,0.2);
+  transition: all .1s;
+}
+.btn:hover { background: var(--ink-faded); transform: translateY(-1px); }
+.btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #150a04; }
+.btn:disabled { opacity: 0.55; transform: none; box-shadow: 0 2px 0 #150a04; cursor: default; }
+.btn-gold {
+  background: var(--gold-light);
+  color: var(--ink);
+  font-weight: 700;
+  border: 2px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink), 2px 6px 0 rgba(0,0,0,0.2), inset 0 0 0 1px rgba(255,255,255,0.35);
+}
+.btn-gold:hover { background: var(--gold-light); }
+.btn-gold:active { box-shadow: 0 1px 0 var(--ink); }
+.btn-outline {
+  font-size: 14px;
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 0 3px 0 var(--ink-light);
+  transition: all .1s;
+}
+.btn-outline:active { transform: translateY(2px); box-shadow: none; }
+.back-btn {
+  font-size: 13px;
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 0 3px 0 var(--ink-light);
+  background: var(--parchment);
+}
+.back-btn:active { transform: translateY(2px); box-shadow: none; }
+
+/* ── 彈窗與對話框 ── */
+.bonus-popup, .confirm-box, .lore-modal {
+  border: 3px solid var(--frame-dark);
+  border-radius: 0;
+  box-shadow: 0 0 0 5px var(--frame-mid), 0 0 0 8px var(--frame-dark), 8px 10px 0 rgba(0,0,0,0.4);
+}
+.bonus-popup-title { font-size: 15px; }
+.bonus-popup-text { font-size: 15px; }
+.bonus-stat-highlight { font-size: 17px; }
+.confirm-title { font-size: 15px; }
+.confirm-text { font-size: 13px; }
+.lore-modal-title { font-size: 15px; }
+.lore-modal-source { font-size: 11px; }
+.lore-modal-content { font-size: 15px; }
+.lore-modal-clue { font-size: 13px; }
+
+/* ── 旅程地圖 ── */
+.map-desc { font-size: 13px; }
+.chapter-circle {
+  border: 3px solid var(--parchment-deep);
+  font-size: 16px;
+}
+.chapter-node.unlocked .chapter-circle {
+  border-color: var(--gold);
+  background: var(--parchment);
+  box-shadow: 0 0 0 2px var(--parchment), 0 0 0 4px var(--ink-light), 3px 4px 0 rgba(0,0,0,0.18);
+}
+.chapter-node.completed .chapter-circle {
+  background: var(--gold);
+  color: var(--parchment);
+  box-shadow: 0 0 0 2px var(--parchment), 0 0 0 4px var(--ink-light), 3px 4px 0 rgba(0,0,0,0.18);
+}
+.chapter-info {
+  background: var(--parchment);
+  border: 2px solid var(--ink-light);
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.14);
+  padding: 10px 14px;
+  position: relative;
+}
+.chapter-info::before {
+  content: '';
+  position: absolute;
+  left: -7px; top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+  width: 10px; height: 10px;
+  background: var(--parchment);
+  border-left: 2px solid var(--ink-light);
+  border-bottom: 2px solid var(--ink-light);
+}
+.chapter-node:nth-child(even) .chapter-info::before {
+  left: auto; right: -7px;
+  border-left: none; border-bottom: none;
+  border-right: 2px solid var(--ink-light);
+  border-top: 2px solid var(--ink-light);
+}
+.chapter-node:not(.unlocked) .chapter-circle { opacity: 0.55; }
+.chapter-node:not(.unlocked) .chapter-info { opacity: 0.55; }
+.chapter-num { font-size: 11px; }
+.chapter-status { font-size: 12px; }
+
+.progress-bar-wrap {
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  height: 10px;
+  background: var(--parchment);
+}
+.progress-text { font-size: 12px; }
+
+/* ── 劇情頁 ── */
+.story-chapter-title { font-size: 16px; }
+.story-text { font-size: 15px; line-height: 2.05; }
+.mission-intro { font-size: 14px; }
+.book-illustration { border: 2px solid var(--ink-light); border-radius: 0; box-shadow: 4px 5px 0 rgba(0,0,0,0.2); }
+
+/* ── 書櫃與書單 ── */
+.shelf {
+  background: var(--parchment);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 0 4px 0 var(--ink), 3px 6px 0 rgba(0,0,0,0.2);
+}
+.shelf:hover { border-color: var(--ink); transform: translateY(-3px); box-shadow: 0 7px 0 var(--ink), 3px 9px 0 rgba(0,0,0,0.2); }
+.shelf-label {
+  background: var(--frame-mid);
+  color: var(--parchment);
+  font-size: 12px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.35);
+  border-bottom: 2px solid var(--ink);
+}
+.shelf-name { font-size: 13px; }
+.shelf-progress { font-size: 12px; padding-bottom: 12px; }
+
+.book-list-header { font-size: 13px; }
+.book-item {
+  background: var(--parchment);
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.12);
+}
+.book-item:hover { border-color: var(--gold); background: var(--parchment); transform: translateY(-1px); }
+.book-item.read { opacity: 0.6; }
+.book-item.read:hover { border-color: var(--ink-light); background: var(--parchment); transform: none; }
+.book-title { font-size: 14px; }
+.book-hint { font-size: 12px; }
+.book-badge { font-size: 10px; }
+.reader-title { font-size: 15px; }
+.reader-content { font-size: 15px; line-height: 2.05; }
+.reader-clue { font-size: 14px; border-radius: 0; border-width: 2px; }
+.books-remaining { font-size: 12px; }
+
+/* ── 任務完成 ── */
+.mission-complete {
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  box-shadow: 0 0 0 4px rgba(154,123,47,0.15), 3px 4px 0 rgba(0,0,0,0.15);
+  background: var(--parchment);
+}
+.complete-text { font-size: 14px; }
+.clue-tag { font-size: 12px; border-width: 2px; border-radius: 0; }
+
+/* ── 見聞錄與成就 ── */
+.lore-item {
+  background: var(--parchment);
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.12);
+}
+.lore-item:hover { border-color: var(--gold); background: var(--parchment); }
+.lore-item-title { font-size: 14px; }
+.lore-item-source { font-size: 11px; }
+.lore-empty { font-size: 13px; }
+
+.achievement-item {
+  background: var(--parchment);
+  border: 2px solid var(--parchment-deep);
+  border-radius: 0;
+  opacity: 0.5;
+}
+.achievement-item.unlocked {
+  opacity: 1;
+  border: 2px solid var(--gold);
+  box-shadow: 2px 3px 0 rgba(0,0,0,0.15), inset 0 0 0 1px rgba(196,168,74,0.3);
+}
+.achievement-item-name { font-size: 14px; }
+
+.ach-group-header {
+  background: var(--frame-mid);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 0 3px 0 var(--ink), 2px 4px 0 rgba(0,0,0,0.18);
+  padding: 10px 14px;
+  transition: all .12s;
+}
+.ach-group-header:hover { border-color: var(--ink); transform: translateY(-1px); }
+.ach-group-arrow { color: rgba(244,234,213,0.8); }
+.ach-group-title { color: var(--parchment); font-size: 13px; text-shadow: 1px 1px 0 rgba(0,0,0,0.35); }
+.ach-group-count { color: var(--gold-light); font-size: 12px; }
+.ach-toggle-btn {
+  font-size: 12px;
+  border: 2px solid var(--ink-light);
+  border-radius: 0;
+  box-shadow: 0 2px 0 var(--ink-light);
+  background: var(--parchment);
+}
+.ach-toggle-btn:active { transform: translateY(2px); box-shadow: none; }
+.ach-empty { font-size: 12px; }
+.ach-future-hint { font-size: 11px; }
+
+/* ── 其他 ── */
+.avatar-frame { border: 2px solid var(--ink-light); border-radius: 0; box-shadow: 2px 3px 0 rgba(0,0,0,0.15); }
+.avatar-hint { font-size: 11px; }
+.toast {
+  border: 2px solid var(--gold);
+  border-radius: 0;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  font-size: 13px;
+}
+.journal-footer { font-size: 11px; }
+
+/* ── 響應式補充 ── */
+@media (max-width: 600px) {
+  .journal { padding: 16px 14px; }
+  .cover {
+    box-shadow:
+      0 0 0 5px var(--frame-mid),
+      0 0 0 7px var(--frame-dark),
+      4px 6px 0 rgba(0,0,0,0.35);
+  }
+  .cover-corner { width: 16px; height: 16px; border-width: 2px; font-size: 9px; }
+  .cover-corner.tl { top: -9px; left: -9px; }
+  .cover-corner.tr { top: -9px; right: -9px; }
+  .cover-corner.bl { bottom: -9px; left: -9px; }
+  .cover-corner.br { bottom: -9px; right: -9px; }
+  .nav-tab { padding: 8px 14px; font-size: 13px; }
+  .chapter-node:nth-child(even) .chapter-info::before {
+    left: -7px; right: auto;
+    border-left: 2px solid var(--ink-light); border-bottom: 2px solid var(--ink-light);
+    border-right: none; border-top: none;
+  }
+}
 </style>
 </head>
 <body>
 
 <div class="journal">
   <div class="cover">
+    <span class="cover-corner tl">✦</span>
+    <span class="cover-corner tr">✦</span>
+    <span class="cover-corner bl">✦</span>
+    <span class="cover-corner br">✦</span>
 
     <!-- HEADER -->
     <div class="journal-header">
       <div class="journal-title">艾爾德倫：白紙創世錄</div>
       <div class="journal-subtitle">Eldran: Chronicles of the Blank Page</div>
+      <div class="header-rule">❖</div>
     </div>
 
     <!-- NAV -->
@@ -1210,6 +1698,11 @@ nav {
       <div class="section-title">✦ 見聞錄</div>
       <div id="loreList"></div>
 
+      <div class="ornament">— ✦ —</div>
+
+      <div class="section-title">✦ 成就</div>
+      <div id="achievementList"></div>
+
       <div class="section-title" style="margin-top:20px">✦ 存檔與代碼</div>
 
       <div class="save-code-area">
@@ -1225,9 +1718,9 @@ nav {
 
       <div class="code-area">
         <div class="field-label" style="margin-bottom:4px">輸入代碼</div>
-        <p style="font-size:11px;color:var(--ink-light);margin-bottom:10px;line-height:1.6">輸入代碼來載入遊戲進度或獲得道具</p>
+        <p style="font-size:12px;color:var(--ink-light);margin-bottom:10px;line-height:1.6">輸入代碼來載入遊戲進度或獲得道具</p>
         <div class="code-row">
-          <input class="code-input" id="codeInput" placeholder="輸入代碼" maxlength="200">
+          <input class="code-input" id="codeInput" placeholder="輸入代碼">
           <button class="btn btn-gold" onclick="redeemCode()">確認</button>
         </div>
         <div class="code-msg" id="codeMsg"></div>
@@ -1235,9 +1728,9 @@ nav {
 
       <!-- ── DEV TOOL（測試用，發布前隱藏）── -->
       <div id="devTools" style="margin-top:32px;padding-top:20px;border-top:1px dashed var(--parchment-deep)">
-        <p style="font-size:10px;letter-spacing:0.12em;color:var(--ink-light);text-align:center;margin-bottom:10px">— DEV —</p>
+        <p style="font-size:12px;letter-spacing:0.12em;color:var(--ink-light);text-align:center;margin-bottom:10px">— DEV —</p>
         <button class="btn" onclick="devClearSave()"
-          style="width:100%;background:transparent;border:1px dashed var(--red-seal);color:var(--red-seal);font-size:12px;padding:10px;letter-spacing:0.08em">
+          style="width:100%;background:transparent;border:1px dashed var(--red-seal);color:var(--red-seal);font-size:13px;padding:10px;letter-spacing:0.08em">
           🗑 清除本機存檔（重置遊戲）
         </button>
       </div>
@@ -1279,21 +1772,6 @@ nav {
     <div class="bonus-popup-title" id="bonusPopupTitle">獲得資訊</div>
     <div class="bonus-popup-text" id="bonusPopupText"></div>
     <button class="btn btn-gold" style="width:100%" onclick="closeBonusPopup()">✦ 收下</button>
-  </div>
-</div>
-
-<!-- FREE POINTS POPUP (post Chapter 2) -->
-<div class="bonus-popup-overlay" id="freePointsPopup">
-  <div class="bonus-popup">
-    <div class="bonus-popup-icon">⚜️</div>
-    <div class="bonus-popup-title">第二章完成</div>
-    <div class="bonus-popup-text">
-      你的判斷與行動為自己贏得了一些事物——<br>
-      <span class="bonus-stat-highlight">獲得 <span id="freePointsAmount">1</span> 點自由屬性點</span><br>
-      可分配到任何一項能力（力量／智慧／影響力）。<br>
-      <span style="font-size:11px;color:var(--ink-light)">前往冒險者頁面以方向鍵調整，確認後即生效。</span>
-    </div>
-    <button class="btn btn-gold" style="width:100%" onclick="closeFreePointsPopup()">✦ 前往分配</button>
   </div>
 </div>
 
@@ -1776,13 +2254,50 @@ const BOOKS = {
 })();
 
 // ══════════════════════════════════════════════
+// ACHIEVEMENT SETS
+// ══════════════════════════════════════════════
+const BOOK_ACHIEVEMENT_SETS = [
+  { id: 'set1', books: ['A2','B1','C3'], name: '只靠唸書就能掌握重點的人' },
+  { id: 'set2', books: ['A1','B4','C1'], name: '艾爾德倫達人' },
+  { id: 'set3', books: ['A3','A4','A5'], name: '世界上沒有無用的書，只有讀了書卻不會用的人' },
+  { id: 'set4', books: ['B2','B3','B5'], name: '再給你一把琴你就能成為吟遊詩人' },
+  { id: 'set5', books: ['C2','C4','C5'], name: '鑽研魔法成癡' },
+];
+
+// ch2.choices[0]=apu, [1]=meli, [2]=dete
+// 0=感情/量尺/休息, 1=農家樂/洛可可/MicroMacro, 2=先烤/感覺量/代替守, 3=摔溫度計/稱讚剪刀/當眾罵
+const CH2_ACHIEVEMENT_SETS = [
+  { id: 'ch2_boardgamer',  name: '桌遊玩家',       check: c => c[0]===1 && c[1]===1 && c[2]===1 },
+  { id: 'ch2_domineering', name: '霸總上身',       check: c => c[1]===2 && c[2]===3 },
+  { id: 'ch2_wildcard',    name: '不按牌理出牌',   check: c => c[0]===3 && c[1]===3 },
+  { id: 'ch2_letmedo',     name: '閃開讓專業的來', check: c => c[0]===2 && c[2]===2 },
+];
+
+const CH3_MAZE_ACHIEVEMENTS = [
+  { id: 'ch3_rashPerson', name: '單身手速的見証者' },
+  { id: 'ch3_eggStrike',  name: '以卵擊石，只是你是那顆卵' },
+  { id: 'ch3_thorn',      name: '好大一根刺' },
+  { id: 'ch3_truce',      name: '我寂寞寂寞就好' },
+  { id: 'ch3_vanish',     name: '現在你看見我，現在你看不見我' },
+  { id: 'ch3_pitfall',    name: '請君入坑' },
+  { id: 'ch3_pitfallAgain', name: '請君再次入坑' },
+  { id: 'ch3_vineVictim', name: '致命的綑綁play' },
+  { id: 'ch3_flower',     name: '有花堪折直須折' },
+  { id: 'ch3_pool',       name: '撈了個寂寞' },
+  { id: 'ch3_boulderPro',   name: '專業的風采' },
+  { id: 'ch3_boulderDeath', name: '專業作死' },
+  { id: 'ch3_neverForget',  name: '過目不忘' },
+];
+
+// ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
 let state = {
   char: { name:'', desc:'', avatar:'', stats:{ str:0, wis:0, cha:0 }, items:[] },
   bonusPoints: { wis:0, cha:0, free:0 },
-  progress: { ch1: { booksRead:[], done: false }, ch2: { task: 0, done: false, choices: [] }, ch3: { phase1: null, phase1_good: false, side: null, phase2: null, phase2_good: false, phase3: null, phase3_good: false, done: false } },
-  usedCodes: []
+  progress: { ch1: { booksRead:[], done: false }, ch2: { task: 0, done: false, choices: [] }, ch3: { olivia: null, torches: 5, maze: null, done: false } },
+  usedCodes: [],
+  achievements: []
 };
 
 function loadState() {
@@ -1796,6 +2311,12 @@ function saveState() {
   localStorage.setItem('eldran_v1', JSON.stringify(state));
 }
 
+// 存檔代碼可能來自其他玩家，渲染 state 內的字串前先跳脫 HTML
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+    ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
 // ══════════════════════════════════════════════
 // TAB SWITCHING
 // ══════════════════════════════════════════════
@@ -1805,6 +2326,7 @@ function switchTab(tab) {
   document.getElementById('page-' + tab).classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
   if (tab === 'map') renderMap();
+  if (tab === 'char') { renderLore(); renderAchievements(); }
 }
 
 // ══════════════════════════════════════════════
@@ -1834,12 +2356,24 @@ function uploadAvatar(e) {
   if (!file) return;
   const reader = new FileReader();
   reader.onload = function(ev) {
-    state.char.avatar = ev.target.result;
-    document.getElementById('avatarImg').src = ev.target.result;
-    document.getElementById('avatarImg').style.display = 'block';
-    document.getElementById('avatarPlaceholder').style.display = 'none';
-    saveState();
-    showToast('頭像已更新');
+    // 縮圖後再存，避免原始照片撐爆 localStorage 與存檔代碼
+    const img = new Image();
+    img.onload = function() {
+      const MAX = 256;
+      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(img.width * scale));
+      canvas.height = Math.max(1, Math.round(img.height * scale));
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      state.char.avatar = dataUrl;
+      document.getElementById('avatarImg').src = dataUrl;
+      document.getElementById('avatarImg').style.display = 'block';
+      document.getElementById('avatarPlaceholder').style.display = 'none';
+      saveState();
+      showToast('頭像已更新');
+    };
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
@@ -1930,7 +2464,7 @@ function renderStats() {
       for (let i = 1; i <= 5; i++) {
         dotsHtml += `<div class="stat-dot${i <= dotCount ? ' filled' : ''}"></div>`;
       }
-      const overflow = val > 5 ? ` <span style="font-size:10px;color:var(--gold);letter-spacing:0.05em">+${val-5}</span>` : '';
+      const overflow = val > 5 ? ` <span style="font-size:12px;color:var(--gold);letter-spacing:0.05em">+${val-5}</span>` : '';
       box.innerHTML = `
         <div class="stat-main">
           <div class="stat-name">${STAT_NAMES[s]}</div>
@@ -1951,7 +2485,7 @@ function renderStats() {
       }
       const bonusKey = s === 'wis' ? 'wis' : s === 'cha' ? 'cha' : null;
       const bonusLeft = bonusKey && state.bonusPoints ? (state.bonusPoints[bonusKey] || 0) : 0;
-      const overflow = val > 5 ? ` <span style="font-size:10px;color:var(--gold);letter-spacing:0.05em">+${val-5}</span>` : '';
+      const overflow = val > 5 ? ` <span style="font-size:12px;color:var(--gold);letter-spacing:0.05em">+${val-5}</span>` : '';
       const bonusHtml = bonusLeft > 0 ? `
         <div class="stat-arrows">
           <button class="stat-arrow" onclick="applyBonus('${s}')" title="${bonusLeft} 點可分配">▲</button>
@@ -1962,7 +2496,7 @@ function renderStats() {
           <div class="stat-value">${val}</div>
           <div class="stat-dots">${dotsHtml}</div>
           ${overflow ? `<div style="margin-top:4px">${overflow}</div>` : ''}
-          ${bonusLeft > 0 ? `<div style="font-size:10px;color:var(--gold);margin-top:4px;letter-spacing:0.05em">+${bonusLeft} 可加點</div>` : ''}
+          ${bonusLeft > 0 ? `<div style="font-size:12px;color:var(--gold);margin-top:4px;letter-spacing:0.05em">+${bonusLeft} 可加點</div>` : ''}
         </div>
         ${bonusHtml}`;
     } else {
@@ -2045,27 +2579,6 @@ function grantFreePoints(amount) {
   saveState();
 }
 
-function claimCh2FreePoints() {
-  if (state.progress.ch2) state.progress.ch2.endingRead = true;
-  saveState();
-  renderChapter2();
-  showFreePointsPopup(CH2_FREE_POINTS);
-}
-
-function showFreePointsPopup(amount) {
-  const popup = document.getElementById('freePointsPopup');
-  if (!popup) return;
-  document.getElementById('freePointsAmount').textContent = amount;
-  popup.classList.add('open');
-}
-
-function closeFreePointsPopup() {
-  const popup = document.getElementById('freePointsPopup');
-  if (popup) popup.classList.remove('open');
-  // After closing, jump to character page so user immediately sees the arrows
-  switchTab('char');
-  renderChar();
-}
 
 function adjustStat(stat, delta) {
   if (state.char.statsLocked) return;
@@ -2097,9 +2610,9 @@ function renderItems() {
     const slot = document.createElement('div');
     if (items[i]) {
       slot.className = 'item-slot';
-      slot.innerHTML = `<div class="item-tag">${items[i].tag || '道具'}</div>
-        <div class="item-name">${items[i].name}</div>
-        <div class="item-desc">${items[i].desc}</div>`;
+      slot.innerHTML = `<div class="item-tag">${escapeHtml(items[i].tag || '道具')}</div>
+        <div class="item-name">${escapeHtml(items[i].name)}</div>
+        <div class="item-desc">${escapeHtml(items[i].desc)}</div>`;
     } else {
       slot.className = 'item-slot empty';
       slot.textContent = '— 空 —';
@@ -2135,10 +2648,8 @@ function generateSaveCode() {
 function copySaveCode() {
   const code = document.getElementById('saveCodeDisplay').textContent;
   if (!code) return;
-  navigator.clipboard.writeText(code).then(() => {
-    showToast('✦ 代碼已複製到剪貼簿');
-  }).catch(() => {
-    // fallback for older browsers
+  // fallback：file:// 或非 HTTPS 環境沒有 navigator.clipboard
+  const fallbackCopy = () => {
     const ta = document.createElement('textarea');
     ta.value = code;
     document.body.appendChild(ta);
@@ -2146,7 +2657,14 @@ function copySaveCode() {
     document.execCommand('copy');
     document.body.removeChild(ta);
     showToast('✦ 代碼已複製到剪貼簿');
-  });
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code)
+      .then(() => showToast('✦ 代碼已複製到剪貼簿'))
+      .catch(fallbackCopy);
+  } else {
+    fallbackCopy();
+  }
 }
 
 function cancelLoadSave() {
@@ -2159,6 +2677,10 @@ function confirmLoadSave() {
   try {
     const decoded = JSON.parse(decodeURIComponent(escape(atob(pendingSaveCode))));
     state = decoded;
+    // maze.result.text 會被直接以 innerHTML 渲染，外來存檔不可信任，載入時一律清除
+    if (state.progress && state.progress.ch3 && state.progress.ch3.maze) {
+      state.progress.ch3.maze.result = null;
+    }
     saveState();
     renderChar();
     renderLore();
@@ -2270,6 +2792,15 @@ function openChapter(id) {
   if (id === 1) renderChapter1();
   if (id === 2) renderChapter2();
   if (id === 3) renderChapter3();
+  if (id >= 4) {
+    // 尚未實作的章節：清掉前一章殘留的畫面，顯示佔位訊息
+    document.getElementById('storyContent').innerHTML = `
+      <div class="story-body">
+        <div class="story-text" style="text-align:center;color:var(--ink-light);font-style:italic;padding:40px 0">
+          本章節的故事即將展開……<br><br>敬請期待。
+        </div>
+      </div>`;
+  }
 }
 
 function backToMap() {
@@ -2299,9 +2830,9 @@ function renderChapter1() {
       <p class="mission-intro">你搬了第一箱，發現裡面有幾本書的頁緣留著細小的手寫眉批，字跡很小，像是某個人曾在這裡讀到一半、忍不住留下了什麼。你搬了第二箱，在箱底找到一本書角翻爛了的薄冊，書頁之間還夾著一根乾燥的葉子，不知道是什麼時候誰放進去的。整理到第三箱的時候，你蹲在書架旁邊，抽出最上面一本，順手翻開看了一眼。</p>
       <p class="mission-intro">老魔法師沒說不能順便讀一讀。</p>
       <div style="border:1px dashed var(--parchment-deep);border-radius:2px;padding:14px 16px;margin-bottom:20px;background:var(--parchment-dark)">
-        <p style="font-size:12px;color:var(--gold-dim);margin:0 0 8px;letter-spacing:.05em">✦ 任務說明</p>
-        <p style="font-size:13px;color:var(--ink-faded);line-height:1.8;margin:0 0 8px">地下書庫共有三個書架區，每區各有幾本書。你最多只能選讀其中 <strong style="color:var(--ink)">三本</strong>，書架不限——全選同一區也可以。</p>
-        <p style="font-size:13px;color:var(--ink-faded);line-height:1.8;margin:0">讀完之後，前往 Facebook 貼文，和其他冒險者交換你們各自發現的線索。</p>
+        <p style="font-size:13px;color:var(--gold);margin:0 0 8px;letter-spacing:.05em">✦ 任務說明</p>
+        <p style="font-size:14px;color:var(--ink-faded);line-height:1.8;margin:0 0 8px">地下書庫共有三個書架區，每區各有幾本書。你最多只能選讀其中 <strong style="color:var(--ink)">三本</strong>，書架不限——全選同一區也可以。</p>
+        <p style="font-size:14px;color:var(--ink-faded);line-height:1.8;margin:0">讀完之後，前往 Facebook 貼文，和其他冒險者交換你們各自發現的線索。</p>
       </div>
 
       <div id="shelveView">
@@ -2355,7 +2886,7 @@ function openShelf(key) {
       <button class="back-btn" onclick="closeShelf()">← 返回書櫃</button>
       <div class="book-list-header" style="border:none;margin:0;padding:0">${shelf.icon} ${shelf.label}｜${shelf.name}</div>
     </div>
-    <p style="font-size:12px;color:var(--ink-light);margin-bottom:12px">${maxReached ? '✦ 已達閱讀上限（3本）' : `可再閱讀 ${3 - totalRead} 本`}</p>
+    <p style="font-size:13px;color:var(--ink-light);margin-bottom:12px">${maxReached ? '✦ 已達閱讀上限（3本）' : `可再閱讀 ${3 - totalRead} 本`}</p>
     ${shelf.books.map(book => {
       const isRead = booksRead.includes(book.id);
       const canRead = isRead || !maxReached;
@@ -2413,7 +2944,7 @@ function openBookReadOnly(bookId) {
     <div class="reader-content">${book.content}</div>
     ${book.isClue && book.clue ? `<div class="reader-clue">${book.clue}</div>` : ''}
     <div class="reader-actions">
-      <span style="font-size:12px;color:var(--gold)">✦ 已閱讀</span>
+      <span style="font-size:13px;color:var(--gold)">✦ 已閱讀</span>
     </div>`;
 }
 
@@ -2423,25 +2954,42 @@ function closeBook() {
   openShelf(currentShelf);
 }
 
-const BOOK_BONUS = {
-  'A1': { stat:'wis', icon:'📜', title:'獲得有用的資訊', text:'你感覺自己獲得了一點有用的資訊。\n智慧 +1 點數待分配。' },
-  'C1': { stat:'wis', icon:'✨', title:'獲得有用的資訊', text:'你感覺自己獲得了一點有用的資訊。\n智慧 +1 點數待分配。' },
-  'A3': { stat:'cha', icon:'📋', title:'獲得說不上有用的資訊', text:'你感覺自己獲得了一點說不上有用的資訊。\n影響力 +1 點數待分配。' },
-  'B3': { stat:'cha', icon:'👁', title:'獲得說不上有用的資訊', text:'你感覺自己獲得了一點說不上有用的資訊。\n影響力 +1 點數待分配。' },
-};
-
 function markRead(bookId) {
   if (!state.progress.ch1.booksRead) state.progress.ch1.booksRead = [];
   if (state.progress.ch1.booksRead.includes(bookId)) { closeBook(); return; }
   if (state.progress.ch1.booksRead.length >= 3) { showToast('已達閱讀上限'); return; }
 
   state.progress.ch1.booksRead.push(bookId);
+  if (!state.achievements) state.achievements = [];
 
-  // Grant bonus point if applicable
-  const bonus = BOOK_BONUS[bookId];
-  if (bonus) {
-    if (!state.bonusPoints) state.bonusPoints = { wis:0, cha:0 };
-    state.bonusPoints[bonus.stat] = (state.bonusPoints[bonus.stat] || 0) + 1;
+  // Check if any achievement set is now complete
+  let earnedSet = null;
+  for (const set of BOOK_ACHIEVEMENT_SETS) {
+    if (!state.achievements.includes(set.id) &&
+        set.books.every(b => state.progress.ch1.booksRead.includes(b))) {
+      earnedSet = set;
+      break;
+    }
+  }
+
+  if (earnedSet) {
+    state.achievements.push(earnedSet.id);
+    const isComplete = state.progress.ch1.booksRead.length >= 3 && !state.progress.ch1.done;
+    if (isComplete) {
+      state.progress.ch1.done = true;
+      grantFreePoints(1);  // 只在第一章首次完成時給一次
+    }
+    renderLore();
+    renderAchievements();
+
+    // Show achievement popup（不附帶屬性點說明）
+    const popup = document.getElementById('bonusPopup');
+    document.getElementById('bonusPopupIcon').textContent = '🏆';
+    document.getElementById('bonusPopupTitle').textContent = '獲得成就';
+    document.getElementById('bonusPopupText').innerHTML = `「${earnedSet.name}」`;
+    popup.dataset.complete = isComplete ? '1' : '';
+    popup.classList.add('open');
+    return;
   }
 
   saveState();
@@ -2450,25 +2998,16 @@ function markRead(bookId) {
   const complete = state.progress.ch1.booksRead.length >= 3 && !state.progress.ch1.done;
   if (complete) {
     state.progress.ch1.done = true;
+    grantFreePoints(1);  // 沒有觸發成就的完成路線也給一次
     saveState();
-  }
-
-  // Show bonus popup, then continue
-  if (bonus) {
-    document.getElementById('bonusPopupIcon').textContent = bonus.icon;
-    document.getElementById('bonusPopupTitle').textContent = bonus.title;
+    const popup = document.getElementById('bonusPopup');
+    document.getElementById('bonusPopupIcon').textContent = '📖';
+    document.getElementById('bonusPopupTitle').textContent = '第一章完成';
     document.getElementById('bonusPopupText').innerHTML =
-      bonus.text.replace('\n', '<br>') +
-      '<br><span class="bonus-stat-highlight">（前往冒險者頁面加點）</span>';
-    document.getElementById('bonusPopup').classList.add('open');
-    if (complete) {
-      document.getElementById('bonusPopup').dataset.complete = '1';
-    }
-    return;
-  }
-
-  if (complete) {
-    setTimeout(() => { renderChapter1(); showToast('✦ 任務完成！線索已記錄'); }, 400);
+      `<span class="bonus-stat-highlight">獲得 1 點自由屬性點</span><br>` +
+      `<span style="font-size:12px;color:var(--ink-light)">可分配到任何一項能力（力量／智慧／影響力）。</span>`;
+    popup.dataset.complete = '1';
+    popup.classList.add('open');
     return;
   }
 
@@ -2480,10 +3019,58 @@ function markRead(bookId) {
 function closeBonusPopup() {
   const popup = document.getElementById('bonusPopup');
   const wasComplete = popup.dataset.complete === '1';
+  const action = popup.dataset.action || '';
   popup.classList.remove('open');
   popup.dataset.complete = '';
+  popup.dataset.action = '';
+
+  if (action.startsWith('maze_')) {
+    const sub = action.slice(5); // 'restart' / 'continue' / 'move_roomId'
+    if (sub === 'restart')        { mazeRestart(); return; }
+    if (sub === 'continue')       { mazeContinue(); return; }
+    if (sub.startsWith('move_'))  { mazeMove(sub.slice(5)); return; }
+    return;
+  }
+
+  if (action === 'ch2' || action === 'ch2_ach') {
+    renderChapter2();
+    setTimeout(() => {
+      const titles = document.querySelectorAll('#storyContent .section-title');
+      const last = titles[titles.length - 1];
+      if (last) last.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+    renderStats();
+    if (action === 'ch2_ach') {
+      // 成就後再補一個完成 popup
+      setTimeout(() => {
+        const p = document.getElementById('bonusPopup');
+        document.getElementById('bonusPopupIcon').textContent = '⚔️';
+        document.getElementById('bonusPopupTitle').textContent = '第二章完成';
+        document.getElementById('bonusPopupText').innerHTML =
+          `<span class="bonus-stat-highlight">獲得 1 點自由屬性點</span><br>` +
+          `<span style="font-size:12px;color:var(--ink-light)">可分配到任何一項能力（力量／智慧／影響力）。</span>`;
+        p.dataset.complete = '';
+        p.dataset.action = 'ch2';
+        p.classList.add('open');
+      }, 400);
+    }
+    return;
+  }
+
   if (wasComplete) {
-    setTimeout(() => { renderChapter1(); showToast('✦ 任務完成！線索已記錄'); }, 400);
+    // 成就後再補一個完成 popup
+    renderChapter1();
+    setTimeout(() => {
+      const p = document.getElementById('bonusPopup');
+      document.getElementById('bonusPopupIcon').textContent = '📖';
+      document.getElementById('bonusPopupTitle').textContent = '第一章完成';
+      document.getElementById('bonusPopupText').innerHTML =
+        `<span class="bonus-stat-highlight">獲得 1 點自由屬性點</span><br>` +
+        `<span style="font-size:12px;color:var(--ink-light)">可分配到任何一項能力（力量／智慧／影響力）。</span>`;
+      p.dataset.complete = '';
+      p.dataset.action = '';
+      p.classList.add('open');
+    }, 400);
   } else {
     closeBook();
     closeShelf();
@@ -2539,6 +3126,85 @@ function renderLore() {
     div.onclick = () => openLoreModal(id);
     el.appendChild(div);
   });
+}
+
+// 各章節的成就清單（新章節上線時在此加一行即可）
+const ACHIEVEMENT_GROUPS = [
+  { chapter: 1, label: '第一章　王國圖書館', sets: BOOK_ACHIEVEMENT_SETS },
+  { chapter: 2, label: '第二章　解決難題',   sets: CH2_ACHIEVEMENT_SETS },
+  { chapter: 3, label: '第三章　解除魔法陣', sets: CH3_MAZE_ACHIEVEMENTS },
+];
+
+// 成就區的展開／檢視狀態（僅本次瀏覽有效，不寫入存檔）
+const achUI = { expanded: {}, showAll: {} };
+
+function renderAchievements() {
+  const el = document.getElementById('achievementList');
+  if (!el) return;
+  const owned = state.achievements || [];
+  el.innerHTML = '';
+
+  ACHIEVEMENT_GROUPS.forEach(group => {
+    // 章節開放後才顯示該章成就
+    if (!isChapterUnlocked(group.chapter)) return;
+
+    const earned  = group.sets.filter(s => owned.includes(s.id));
+    const isOpen  = !!achUI.expanded[group.chapter];
+    const showAll = !!achUI.showAll[group.chapter];
+
+    const header = document.createElement('div');
+    header.className = 'ach-group-header';
+    header.innerHTML = `
+      <span class="ach-group-arrow">${isOpen ? '▼' : '▶'}</span>
+      <span class="ach-group-title">${group.label}</span>
+      <span class="ach-group-count">🏆 ${earned.length} / ${group.sets.length}</span>`;
+    header.onclick = () => {
+      achUI.expanded[group.chapter] = !isOpen;
+      renderAchievements();
+    };
+    el.appendChild(header);
+
+    if (!isOpen) return;
+
+    const body = document.createElement('div');
+    body.className = 'ach-group-body';
+
+    const toggleRow = document.createElement('div');
+    toggleRow.className = 'ach-toggle-row';
+    const toggleBtn = document.createElement('button');
+    toggleBtn.className = 'ach-toggle-btn';
+    toggleBtn.textContent = showAll ? '僅顯示已取得' : `查看所有成就（${group.sets.length}）`;
+    toggleBtn.onclick = () => {
+      achUI.showAll[group.chapter] = !showAll;
+      renderAchievements();
+    };
+    toggleRow.appendChild(toggleBtn);
+    body.appendChild(toggleRow);
+
+    const list = showAll ? group.sets : earned;
+    if (list.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'ach-empty';
+      empty.textContent = '尚未取得本章成就';
+      body.appendChild(empty);
+    } else {
+      list.forEach(set => {
+        const isUnlocked = owned.includes(set.id);
+        const div = document.createElement('div');
+        div.className = 'achievement-item' + (isUnlocked ? ' unlocked' : '');
+        div.innerHTML = `
+          <div class="achievement-item-icon">${isUnlocked ? '🏆' : '🔒'}</div>
+          <div class="achievement-item-name">「${set.name}」</div>`;
+        body.appendChild(div);
+      });
+    }
+    el.appendChild(body);
+  });
+
+  const hint = document.createElement('div');
+  hint.className = 'ach-future-hint';
+  hint.textContent = '— 更多成就將隨章節開放 —';
+  el.appendChild(hint);
 }
 
 function openLoreModal(bookId) {
@@ -2751,7 +3417,7 @@ const STORY_CH3 = `薇爾達把地圖捲起來，放進她的書桌抽屜。
 
 — ✦ —
 
-那天傍晚，你在圖書館後室整理補給清冊。
+那天傍晚，你在圖書館後室整理書冊。
 
 老魔法師端著茶，從書架後方繞出來，往口袋裡摸了摸，又往衣領摸了摸，然後意識到眼鏡就在臉上，漫不經心地掃了你一眼，低頭看著自己的杯底。
 
@@ -2761,15 +3427,15 @@ const STORY_CH3 = `薇爾達把地圖捲起來，放進她的書桌抽屜。
 
 「那就去吧。」他說，語氣和交代你把書搬上架一樣平靜，「薇爾達那邊我來說。」
 
-你想問為什麼是你。但他的茶已經又端起來了，那個動作的意思是：對話結束了。
+你想問為什麼還要派你去，但他的茶已經又端起來了。經過這幾天的相處，你知道那個動作的意思是：對話結束了。
 
-就在他走出後室之前，在門口停了一下。
+就在他走出後室之前，老魔法師在門口停了一下。
 
 「你知道嗎，」他說，語氣和平時說腰痛一樣隨意，「像你這樣的人，我以前見過。只見過一次，那是三百年前的事了。」
 
-說完他就走了，留下一室的舊書氣味，和你說不清楚的困惑。
+說完他就走了，留下一室的舊書氣味，和你摸不清楚頭緒的困惑。
 
-你坐在燈下，直直地盯著桌上翻開來的書頁，腦子裡還在響著老魔法師最後說的那句話。
+你坐在燈下，直直地盯著桌上翻開來的書頁，腦子裡還在響著老魔法師最後說的話。
 
 燈芯噼了一聲。
 
@@ -2777,19 +3443,23 @@ const STORY_CH3 = `薇爾達把地圖捲起來，放進她的書桌抽屜。
 
 你不確定她站在那裡多久了。她沒有說什麼，走進來，從衣袋取出一支筆和幾張對折的空白紙，放在你桌上，輕輕推了過來。
 
-「你會作為後勤隨軍出征，這是記錄用的紙筆，」她說，「出發之後，物資調度、人員異動，都要記錄清楚。」
+「你會作為後勤隨軍出征，這是後勤記錄用的紙筆，」她說，「出發之後，物資調度、人員異動，都要記錄清楚，其他的事情，你不用太過擔心。」
 
-她說完就走了，腳步聲沒有停留。
+她說完就匆匆地走了，腳步聲沒有停留。
 
 你拿起那支筆。
 
 紙是新的，還有折痕。
 
+「這對師徒……魔法師都要這麼神神秘秘的嗎？」你心裡想著。
+
 — ✦ —
 
 遠征軍出發那天，王城廣場聚滿了人。
 
-律師站在隊伍最前面，披著猩紅色的斗篷，腰間掛著一把王城鑄造師特製的聖劍。廣場上爆發出震耳欲聾的歡呼聲。他的演說鏗鏘有力，每一個停頓都掐得恰到好處，群眾跟著鼓掌，有個孩子在人群裡喊「勇者萬歲」，周圍的大人全笑了。
+律師站在隊伍最前面，披著猩紅色的斗篷，腰間掛著一把王城鑄造師特製的聖劍。
+
+廣場上爆發出震耳欲聾的歡呼聲。他的演說鏗鏘有力，每一個停頓都掐得恰到好處，群眾跟著鼓掌，有個孩子在人群裡喊「勇者萬歲」，周圍的大人全笑了。
 
 你站在隊伍的最後面，背著一個沉甸甸的包袱，裡面是補給清冊、備用毛毯、急救藥草，聽著那些歡呼聲從廣場的另一頭傳來。
 
@@ -2801,57 +3471,65 @@ const STORY_CH3 = `薇爾達把地圖捲起來，放進她的書桌抽屜。
 
 說完，他便自顧自地和你聊起軍中的大小事。
 
-傍晚紮營的時候，你看見他蹲在地上，從口袋裡掏出幾顆小石頭，把今天路上撿的一顆比了比顏色，滿意地收起來。你問他在幹嘛。他說每個地方的石頭顏色都不一樣，他在收集。然後低頭繼續整理，加了一句：「你別說出去，大家會笑我。」
+傍晚紮營的時候，你看見他蹲在地上，從口袋裡掏出幾顆小石頭，把今天路上撿的一顆比了比顏色，滿意地收起來。你問他在幹嘛。他說每個地方的石頭顏色都不一樣，他在收集各地的石頭作為紀念。然後低頭繼續整理，加了一句：「你別說出去，大家會笑我的。」
 
 — ✦ —
 
 部隊往北行軍。
 
-第一天，律師下令全速前進，因為「速度即勝利」。第二天，士兵們已經疲憊得連站哨都打瞌睡。
+第一天，律師下令全速前進，因為「速度即勝利」。到了第二天，士兵們已經疲憊得連站哨都打瞌睡。
 
-第三天上午，一名斥候快馬回報前方山道狹窄，地形險要，建議繞行。
+第三天上午，前鋒斥候快馬傳回消息：前方道路有異。
 
-律師沉吟了片刻。他沒有直接駁回，而是說：「繞行費時。這樣——我親自帶一支精銳，先走側路偵查前方狀況。主力部隊照原定路線前進，莫要遲誤。」
+斥候說，他一直往前走，走了兩個鐘頭，走到了一片空地，看了看四周，認出了那是隊伍出發前一晚紮營的地點。他又往前走了一個鐘頭，結果又回到了同一片空地。
 
-他說這話的時候，眼睛掃過副官，掃過幾個將官，最後視線落在遠方。副官的嘴動了一下，沒有說話。斥候敬了個禮，退到一旁。
+副官聽完之後，便向律師回報。
 
-律師點了十幾個人，帶著人離開了主力隊伍，他的猩紅斗篷很快地消失在山道轉彎處。
+律師說：「那就換一個方向走。」
 
-就在這時，那個副官走過來，在你旁邊停下，說奉命在緊急情況發生時直接向你回報。你疑惑地問他是誰的命令，他說是首席魔法師薇爾達，你又接著問他為什麼是你，他說他也不清楚。
+斥候換了方向之後，又無功而返地回來了。
 
-你在補給車隊旁邊清點繃帶數量，沒有再多問。但你抬起頭，看了那條山道一眼。
+「是魔王軍設下的魔法迷宮，」副官說，「除非我們能夠辨識方向，否則會在迷宮內不斷繞路。」
 
-兩側是陡峭的岩壁，前後狹長，中間勉強夠兩列士兵並行。你想起以前玩戰棋的時候，這種地形叫做「漏斗」——進去容易，退出來難，是埋伏的最佳選擇。
+「只要能夠辨識方向就能走出迷宮了嗎？」律師問。
 
-你低頭，又翻了一下補給清冊，把繃帶的數量寫在欄位裡。沒有說什麼。
+「每個魔法迷宮的設計都不同，」副官說，「具體解法還得要探查之後才會知道。」
+
+律師沉默了一下，說：「我們沒有這麼多時間，就讓本勇者親自破解這個迷宮。」
+
+「勇者大人，恐怕沒有這麼容易……」副官正要提醒律師迷宮裡還有許多陷阱和怪物，但律師已經舉步走向山道入口，猩紅斗篷在風裡飄起來，姿態瀟灑。
+
+眾人只好在原地等待。
+
+兩個鐘頭之後，律師的身影終於重新出現在山道入口，狼狽不堪，就連陪他進去的三名斥候也是一臉疲憊。
+
+副官見狀，趕緊向前詢問結果，但律師只是擺擺手說他今天累了，要副官退下，有什麼事情明天再說，便灰溜溜地進了他的營帳。
 
 — ✦ —
 
-部隊進入山道的第三個鐘頭。
+因為不清楚前方的情況，你與奧立維等後勤，只能百般無聊地在隊伍後方等待。
 
-陽光被兩側的岩壁削成一條細長的白線，落在隊伍中央。馬匹不安地噴著鼻息。前隊已經看不見後隊，後隊也聽不見前隊的號令。
+就在此時，副官向你走來，並將你叫到一旁。
 
-然後，兩側岩壁的頂端，突然出現了影子。
+他低聲告訴你，薇爾達有命令，緊急情況時直接向你匯報，於是他簡單向你說明了狀況，然後從懷裡取出一本書，你低頭看了一眼書名：《魔法陣設計原理》。
 
-不是鳥，也不是巡哨應有的整齊陣列，黑壓壓的一片，透露著不詳的氣息。
+你覺得這個書名很眼熟，想了幾秒鐘，想起來了——這本書在王城圖書館的第三個書架上，你曾經拿起來翻過幾頁，以為是魔法學的基礎教材，翻了兩頁就放回去了。
 
-是埋伏。
+副官將書本翻到某一頁，推到你面前。
 
-你還來不及反應，第一波箭雨就從上方落下。隊伍立刻亂了。
+你低頭看著那頁的章節標題：「第七章——實戰魔法陣的類型與破除方式」。
 
-前隊想往前衝出山道，後隊想往後撤，中間的補給車隊卡在最窄的位置動彈不得。
+書上將標準魔法迷宮的結構說得很清楚。
 
-馬嘶聲、慘叫聲、兵刃碰撞的金屬聲在岩壁間反覆迴盪，像是同一聲音被切碎了很多次。
+副官指著圖示向你說明：基礎的魔法迷宮通常由數個不同的迷宮房間疊加構成，各個房間的效果不同，難以個別辨識，必須逐一破解。
 
-副官站在隊伍中段，正在大聲喊著指令，但他的聲音被兵刃聲和慘叫聲淹沒了。你看見他扯著一個士兵的肩膀，把人推向掩體，然後轉身去拉另一個，臉上帶著驚慌卻又故作鎮定的神情。
+你把書上的陷阱名稱快速讀過了一遍。
 
-奧立維被人撞倒在你旁邊，肩膀蹭破了皮，他抬頭看著你，眼裡盡是恐懼。
+「這裡還有常見的解除方法，」副官說著，將書翻到下一頁。
 
-你看了看狹窄的山道兩端，看了看混亂的隊伍，看了看副官來回奔走卻越來越跟不上混亂速度的背影。
+看完了書上的資訊，你抬頭便看到副官向你投來急切的眼神，你看了看旁邊正在休息的後勤，又看了律師的營帳一眼。
 
-你蹲下去，把奧立維扶起來。
-
-然後你站起來，環視了一下混亂的山道，做出了一個決定。`;
+你做出了一個決定。`;
 
 const CH2_TASKS = [
   {
@@ -3069,106 +3747,140 @@ const CH2_TASKS = [
 「規則之力共鳴於——流動的過程，非靜止的結果。」`,
     options: [
       {
-        label: '🧠 開導', req: { stat:'wis', min:2 }, reqLabel:'需要智慧 ≥ 2',
-        story: `「梅莉，你說你剪了十五年的布，你的手知道該怎麼動作。」
+        label: '「把量尺藏起來，要她直接剪」', req: { stat:'wis', min:2 }, reqLabel:'需要智慧 ≥ 2',
+        story: `你請梅莉為你剪裁一件上衣，然後趁梅莉去取布料的空檔，把量尺悄悄塞進外套口袋。
 
-她沉默，沒有反駁。
+她回來之後，看了一眼工作台，皺眉說道：「量尺呢？」
 
-「那個彷彿擁有自我意識的手，」你說，「它在量尺量完之後，是同一雙手嗎？」
+「可能掉了吧，」你說，「沒關係，你就直接剪吧。」
 
-她皺眉：「什麼意思？」
+「不行，」她說，「不測量的話，萬一超過標準，我是要負法律責任的。」
 
-「量尺告訴你的，是靜止的結果——零點五分。但你的手工作的時候，一切是流動的。剪刀沿著布料走的每一毫米，都是一個當下的判斷，不是事先算好的數字。你現在做的，是先把流動凍結，然後測量它。」
+「不會超過標準的，」你說，「再說，我也不會舉報你。」
 
-梅莉低頭看著那塊布，很久沒有說話。
+「但……我不確定。」她的手指輕輕捏著剪刀的握把，沒有動作。
 
-然後她拿起剪刀。
+「那就試試看嘛，」你說，「剪一刀，就一刀。」
 
-她沒有去量。
+她看著布料，很久沒有說話。終於，她抬起剪刀，往前伸了一點，卻又停下來：「如果不符合標準怎麼辦？」
 
-剪刀的聲音在工作台上響起來，一條流暢的線，從這頭走到那頭，沒有停。
+「我相信你，」你說，「大不了就再剪一刀。」
 
-她剪完之後，你看著那條線——不是直線，是順著布料紋理走的線，有自己的節奏。
+她又猶豫了一下。
 
-「你剛才用尺測量了嗎？」你問。
+「沒問題的，」你再說一次，語氣很平靜，「剪吧。」
 
-「沒有，」她說。
+終於，剪刀的刀口貼上了布料。
 
-然後她拿起尺，量了一下，說：「零點一分。」
+雖然動作很慢，但剪刀劃過布料的聲音，很清脆。
 
-她把尺放下，沒有說話。但她的手，輕輕摸了摸那塊布，若有所思。`
+她剪完之後，手還握著剪刀沒有放開，低著頭看著布料上的剪口。
+
+你從口袋裡拿出量尺，放到她手旁邊，但梅莉並沒有接過量尺。
+
+她抬起頭，對著你笑著說：「接下來，讓我們把衣服完成吧！」`
       },
       {
-        label: '🎲 嘴砲', req: { stat:'cha', min:2 }, reqLabel:'需要影響力 ≥ 2',
-        story: `你想起了兩款遊戲，一款叫《洛可可》，一款叫《拼布藝術》。你決定都用上。
+        label: '「問她有沒有聽過《洛可可》」', req: { stat:'cha', min:2 }, reqLabel:'需要影響力 ≥ 2',
+        story: `「梅莉，你有沒有聽過一款叫《洛可可》的遊戲？」
 
-「梅莉，你聽過《洛可可》嗎？是一款裁縫主題的桌遊，玩家設計禮服，要根據宴會主題、布料稀缺性、還有其他裁縫的競爭，當下決定每一步怎麼做。沒有人在剪布料之前先查零點五分的標準。」
+她放下手中的布料，用一種介於「這個人在說什麼」和「我要不要繼續聽下去」之間的表情看著你。
 
-梅莉看著你，表情介於「這個人在說什麼」和「繼續說」之間。
-
-你繼續說：「還有一個遊戲叫《拼布藝術》，兩個玩家搶材料來拼成布料，遊戲中更重要的是材料與時間的掌握，而不是誤差標準。」
+「那是一款裁縫主題的桌遊，玩家設計禮服，要根據宴會主題、布料稀缺性，還有其他裁縫的競爭，當下決定每一步怎麼做，但遊戲中沒有人會在動剪刀之前先用量尺來測量。」
 
 「……所以？」
 
-「所以，」你說，「世界上最好的裁縫，不是量得最準的，是感覺最好的。官方的零點五分，是給那些還沒有練習十五年的人設的底線，但這不是對你的限制，你早已將這樣的感覺內化了。」
+「還有一個叫《拼布藝術》，兩個玩家搶布料，更重要的是手上的材料和每一個回合的判斷，而不是測量結果。」
 
-梅莉盯著你看了五秒鐘。
+梅莉盯著你看了許久。
 
-然後她拿起剪刀，開始剪。
+然後她拿起剪刀，沒有測量就開始剪裁。
 
-沒有測量。
+剪完之後她才拿起量尺比劃了一下，以如釋重負的語氣說：「零點一分。」
 
-剪完之後，她才去用尺量了一下，說：「零點一分。」
+你點頭，準備說點鼓勵的話。
 
-你點點頭，準備說「果然如此」之類的話。
+但她先開口：「《洛可可》有官方規則書嗎？」
 
-她說：「你剛才說的那兩個遊戲，我可以在哪裡買？」
+「有，但——」
 
-你說你也不確定艾爾德倫有沒有賣。
+「可以借我看一下嗎，」她說，「我想研究一下裡面的裁縫標準。」
 
-她說：「好吧，但如果找到了，告訴我一聲。」
-
-你的內心突然冒出一個邪惡的想法：如果你把這些遊戲帶回艾爾德倫來賣的話，是不是就能……
-
-你用力拍了拍自己的頭，把這個想法趕出去，重振精神，前往下一個任務。`
+你無語地看著她，一時之間不知道該說什麼。`
       },
       {
-        label: '🤝 身體力行', req: { stat:'str', min:2 }, reqLabel:'需要力量 ≥ 2',
-        story: `「我們來嘗試一件事，」你說，「把量尺放到一旁，然後你教我剪布。」
+        label: '「眼睛看我，用感覺量」', req: { stat:'str', min:2 }, reqLabel:'需要力量 ≥ 2',
+        story: `你走到梅莉的工作台旁邊，停在她面前。
 
-梅莉看著你，很懷疑：「你學會剪布就會有用了嗎？」
+她抬頭：「你要做什麼？」
 
-「可能沒用，也可能我學不會，」你說，「但我們試試看嘛。」
+你往前走了一步，她便往後退了一步，直到她的後背貼到了工作台的架子上。
 
-她將剪刀遞給你。
+你把手撐在她旁邊的架子上，說：「看著我。」
 
-你站在一匹布前，將剪刀緊緊握在手裡。
+梅莉驚訝地說：「……什麼？」
 
-梅莉看著你僵硬的手，輕聲提醒你：「放輕鬆，將剪刀當作是手的延伸，然後……」
+「不要看量尺，不要看布料，我要你的眼裡只有我，」你說，「你幫我量一下尺寸，就用感覺量，不許用量尺。」
 
-她沒有再說下去，轉身又拿起了另一把剪刀。
+她看著你，臉色微微變紅了一點：「你、你想做什麼——」
 
-剪刀的聲音很清脆，她沒有猶豫地對著布剪了一刀。
+「量尺寸，」你說，「你是裁縫，我需要一件衣服，就站在這裡，看著我，用感覺給我量。」
 
-剪完之後，梅莉低頭看那條線。
+兩個人的距離，比一般客人和裁縫之間的距離近了不少。
 
-你把量尺遞給她。她測量了一下，說：「零點二分。」
+梅莉的眼神在你臉上停了一下，移開，又移回來。
 
-然後她又量了一次，說：「還是零點二分。」
+「……好，」她說，聲音比剛才小了一點，「不要動。」
 
-她把量尺放到一邊，又剪了一刀，沒有停。然後又一刀。
+她伸出手，沿著你的肩寬、袖長，做了幾個手勢，全憑感覺。然後拿起剪刀，低頭開始剪布。
 
-你在旁邊坐著，看她剪了整整半個下午的布。
+你站在旁邊，也沒有說話。
 
-後來你問她：「你有沒有注意到什麼時候你的手自己動起來了？」
+過了一會兒，她把剪好的布料比在你身上，往後退半步看了看，完全合適。
 
-她想了一下，眼睛發著光。
+她低著頭將布料遞給你，避開你的視線。
 
-你點點頭，將量尺輕輕放回她的工作台上。
+你正準備說謝謝時，她開口說：「那個……你有沒有需要……我幫你做幾件內褲？」
 
-當你站起來準備離開時，梅莉走過了工作台，給了你一個深深的擁抱。
+你愣了一下，以為是自己聽錯了。
 
-`
+她趕快補了一句：「就是，如果你有需要的話。」然後低下頭，假裝在整理工作台。
+
+「不、不用，謝謝，我先走了。」
+
+你飛也似地逃出了裁縫鋪，不敢再有交集。`
+      },
+      {
+        label: '「稱讚她的剪刀長得很有氣質」', req: null, reqLabel: '',
+        story: `「梅莉，你這把剪刀，長得很有氣質。」
+
+「什麼？」
+
+「我說，你這把剪刀，很有氣質，」你說，「它的刀刃有一點使用的痕跡，像是見過世面的樣子，不是那種閃亮亮的新刀。」
+
+梅莉把剪刀拿起來，用一種從沒這樣看過的眼神看著它。
+
+「你和它，有點像，」你說。
+
+「……哪裡像？」
+
+「都經歷過許多，卻又十分內斂。」你說，「我覺得你們是那種，一人一剪，什麼都說得上的朋友。」
+
+你又接著問：「你們一起剪過什麼令你印象最深的衣服？」
+
+梅莉看著剪刀，想了很久。
+
+「有一次，」她說，「一個老太太，帶著一匹布料，她說她想用那匹布料製作一件衣服，然後穿著衣服去見她的女兒。」
+
+她停頓了一下：「那匹布雖然很舊，但保存得很好。老太太告訴我那是她和女兒一起買的，她們已經很多年沒見了。」
+
+你沒有說話，只是靜靜地看著梅莉。
+
+她低頭，把布料攤開，拿起剪刀：「那時，我在布料上感受到的，是思念和期待，而我在意的，是能不能用我的雙手和這把剪刀，在布料上剪裁出這樣的情緒。」
+
+這次，她的手沒有停下來。剪刀從這頭走到那頭，沒有猶豫。流暢的刀線，就像一人一剪在布料上默契地共舞一般。
+
+「謝謝你，幫我找回了這位有氣質的朋友。」梅莉眨著眼睛，向你露出了一個讓你有些失神的微笑。`
       }
     ]
   },
@@ -3195,116 +3907,180 @@ const CH2_TASKS = [
 「規則之力共鳴於——直接的感知，非事後的推論。」`,
     options: [
       {
-        label: '🧠 開導', req: { stat:'wis', min:2 }, reqLabel:'需要智慧 ≥ 2',
-        story: `「老德，我問你一件事，」你說，「那天，在你看到他們的證件之前，你的感覺是什麼？」
+        label: '「讓老德先休息一天」', req: { stat:'wis', min:2 }, reqLabel:'需要智慧 ≥ 2',
+        story: `你提議讓老德休息一天。
 
-「有問題，」他說，「就是有問題。」
+老德看著你，說：「不行，看守城門的任務非我不可。」
 
-「那在你看到證件之後，你的感覺是什麼？」
+你告訴他你已經安排了其他士兵。
 
-他沉默了。
+「他們沒辦法代替我。」他說。
 
-「還是有問題，」他說，「但我告訴自己，標準說沒問題。」
+「那你就在旁邊看著，」你說，「遠遠的看著就好。」
 
-「那是兩件不同的事，」你說，「感覺說有問題，是你守了二十年城門的規則之力在說話。標準說沒問題，是官方的文件在說話。你那天選擇相信了文件，沒有相信規則之力。這不是你的錯，是申報令讓你以為這兩件事必須選一個。」
+老德沒有說話。
 
-老德看著你，臉上的表情沒有改變，但眼神變了一點。
+「一天，」你說，「就一天。」
 
-「那我以後應該不管標準，靠感覺攔人？」
+他沉默的時間很長，長到你以為他要拒絕你時，他說：「好吧，但必須是在一個有狀況能立即支援的距離。」
 
-「不，」你說，「標準是標準，感覺是感覺，兩個都要有。標準是起點，感覺是判斷。標準說可以放行，但你的感覺說有問題——那個有問題，值得你多問一句話。就一句就夠。」
+你們兩個人站在城牆上一個看得見城門的角落，另外兩名士兵接手了老德的崗位。
 
-老德沉默了很長時間。
+老德靠在牆邊，起初沒有說什麼。
 
-然後他說：「多問一句話。」
+大約過了半刻鐘，他開口了：「那輛車，沒有檢查車底。」
 
-你說：「對。」
+「那個人，對方回答問題他沒有追問，就放進去了，」他說，「那個包袱拿的方式不對，應該要求開包。那三個人一起進來，沒有分開核查——那個人，你看他右邊肩膀，有抬高，左手也不自然，那種方式通常是懷裡有東西——」
 
-那天下午，老德攔下了一個所有證件都合格、著裝也整齊的商人，多問了一句：「你的貨從哪裡來？」
+他說得越來越快，聲音越來越低。
 
-商人的眼神閃了一下。
+然後你問他：「你從剛才到現在，都沒有指責他們沒有按照標準核對清單來檢查，是嗎？」
 
-後來查出來，那批貨裡有走私的魔王軍物資。
+老德停了下來。
 
-你回去的時候，老德沒有說謝謝，他只是給了你一個眼神。
+他若有所思地看著城門，然後他轉過來，用一種你說不清楚的眼神看了你一眼，說：「謝了。」
 
-你能感覺到那個眼神，和早上你來的時候已經不一樣了。`
+他說完就轉身快步離去，你可以感覺到他想要立即回到城門的迫切。
+
+你在城牆上看著他走回城門，推開那兩個士兵，接手了崗位。你們之間的距離離得太遠，聽不清楚他說了什麼，但從那兩個士兵的表情，你可以感覺到他說的話應該不太好聽。`
       },
       {
-        label: '🎲 嘴砲', req: { stat:'cha', min:2 }, reqLabel:'需要影響力 ≥ 2',
-        story: `你想到了一款叫《Micro Macro Crime City》的遊戲。
-
-「老德，你聽過《Micro Macro Crime City》嗎？」
+        label: '「問他有沒有玩過《Micro Macro Crime City》」', req: { stat:'cha', min:2 }, reqLabel:'需要影響力 ≥ 2',
+        story: `「老德，你有沒有聽過一款叫《Micro Macro Crime City》的桌遊？」
 
 「沒有。」
 
-「這是一個偵探遊戲，玩家在遊戲中會獲得提示，然後他們必須依靠自己的眼力，找出犯罪的真相。」
+「整個遊戲就是一張巨大的城市地圖，你要從裡面找出犯人。不靠文件，不靠申報令，就是盯著地圖上的細節——誰在什麼時間出現在什麼地方、誰的動作和周圍的人不一樣、誰的眼神不對來找出犯人。除了仔細觀察之外，遊戲沒有任何標準、任何要求。」
 
-老德看著你，表情沒什麼變化。
+老德看著你，沒有說話。
 
-「你的感覺，」你繼續說，「就像是遊戲中的提示。這不是偏見，不是猜測，而是二十年來每一個過城門的人，留給你的資料。官方的標準是新來的，你所掌握的資料比它可靠多了。」
+「說起觀察、找出蛛絲馬跡的能力，沒有人能比的上在城門日復一日、累積了二十年經驗的你。」
 
-沉默。
+「那是遊戲，」他說。
 
-「……你是拿遊戲來跟我說道理？」
+「對，」你說，「但在遊戲中做的事情，和你在工作上做的事情，有什麼區別嗎？」
 
-「是的，」你說，「但道理是共通的。」
+「遊戲中犯錯了不需要擔負責任，但工作不同！」老德想起了他錯放的壞人，憤怒地說。
 
-老德盯著你看了一會兒，然後轉身，站回了崗亭旁邊。
+「在遊戲中，犯錯了我們會學習、讓下一次遊戲更好，」你冷靜地說：「工作也是，犯了錯，我們也會從錯誤中學習、並設法彌補錯誤。」
 
-下一個進城的人，他照例查了證件，然後多問了一句：「你今天打算去哪裡？」
+彌補錯誤這一句話，似乎提醒了老德，他的眼睛亮了起來，說：「對！犯人還沒落網，他們一定會想要逃出城，我得抓住他們！」
 
-那個人說了個地址，老德點點頭，放行了。但他的眼神在那個人背影上多停了一秒。
+但隨即，老德臉上的光又黯淡了下來：「但是標準核對清單……」
 
-那天下午，有一個他「感覺有問題」的人，被他攔下來多問了幾句，然後被移交給了內衛調查。後來查出那個人確實有問題。
+「清單只規定符合規定的人必須放行『入城』，但卻沒說『出城』標準不是嗎？」
 
-你後來再去城門的時候，老德還是那個老德，還是一樣的表情，一樣站在那裡。
+對於你提出的規則漏洞，老德以詫異又帶著審視壞人的眼神看著你。
 
-但你知道他現在信任自己的感覺了。`
+「別這樣看著我，我只是想告訴你，規則和我們一樣，都不是完美的，遇到錯誤時……」
+
+還沒等你說完，老德就拿起了武器，戴上了頭盔，起身朝城門走去。
+
+臨走前，他朝你露出了一絲不易察覺的微笑，說：「謝謝你，但如果被我發現你之後還想鑽規則的漏洞，我可是不會輕易饒你的。」`
       },
       {
-        label: '🤝 身體力行', req: { stat:'str', min:2 }, reqLabel:'需要力量 ≥ 2',
-        story: `「我陪你站一個時辰，」你說，「就站在這裡，你看什麼，我也看。」
+        label: '「讓我來代替你守城門」', req: { stat:'str', min:2 }, reqLabel:'需要力量 ≥ 2',
+        story: `「讓我來替你守幾個小時吧。」
 
-老德看著你：「你要做什麼？」
+老德看著你：「你？」
 
-「什麼都不做，就站著。」
+「別看我這樣，我之前可是破獲過幾件大案，」你說，只不過都是在遊戲裡，你在心裡嘀咕。
 
-他沉默了一下，然後說：「隨你。」
+「喔？」老德挑起了眉毛，饒有興趣地看著你。
 
-你們就站在城門旁邊，看著來來往往的人。
+「第一件：一棟大宅子裡的謀殺案，六個嫌疑人，六種凶器，九個房間——最後靠著排除法，鎖定了凶手、地點、和凶器。」
 
-十幾分鐘後，你問：「我覺得這些人看起來，都沒什麼問題？」
+「第二件：泰晤士河沿岸的連環謀殺案，靠著報紙和地圖追線索，走訪了很多地點，跑了不少冤枉路，但最後找到了。」
 
-老德的視線掃過前方的隊伍，說：「那個推著貨車的是老主顧，沒問題。後面那個趕路的旅人很累，不像是要搞事的。再後面那個……」
+老德繼續看著你，沒有說話。
 
-他停頓了一下。
+「第三件最難，」你說，「是靠一個死去的鬼魂傳夢境給我，我要從那些夢境的圖推理出是誰殺了他、在哪裡殺的、用什麼殺的。鬼魂給的圖非常難懂，有一次給了我一頭鹿和一把雨傘，我完全不知道那是什麼意思——」
 
-「那個東張西望的年輕人，不確定。」
+「這些案子是在哪裡辦的？」老德追問。
 
-「他人看起來不壞呀？」你說。
+你停了一下，說：「在世界各地，有錢人的豪宅、英國倫敦等，」你鎮靜地說：「但我想無論是我的世界，或是這裡，辦案的方法都是一樣的。」
 
-老德猶豫了一下，走了過去。
+老德看了你一眼，又看了看城門，說：「好……你守，我在旁邊看著。」
 
-那個年輕人是從邊境逃來的難民，沒有完整的通行文件，有點緊張，所以東張西望。老德問了幾句，判斷不是壞人，讓他以訪客身份登記入城，並交代他盡快補辦正式文件。
+你走向城門，擺出了一副你認為非常專業的架勢。
 
-老德回來的時候，表情比之前輕鬆了一些。
+第一個讓你起疑的，是一個背著大包小包、神色匆匆、不斷往四周張望的男人。你把人攔下來，要求開包檢查。
 
-「標準是標準，」他說，「但標準也是空洞的。」
+老德在你旁邊說：「他是去趕集的布商，每個月這個時間都來。」
 
-你在地圖上把他的圓圈從紅色改成了綠色。
+你放走了他。
 
-然後你站在那裡，陪老德又站了半個時辰。沒有人再說什麼，你們就這樣一起看著來往的人。
+第二個是一個靠著牆站著的年輕人，左顧右盼，眼神不定，看起來隨時準備行動。你走上前詢問他在這裡做什麼。
 
-有時候老德會說一句「那個沒問題」，有時候說「那個要多看一下」。你什麼都不說，只是聽著。
+他說他在等朋友。
 
-後來你問：「你今天有沒有因為感覺出錯過？」
+老德說：「他每次都在這裡等，那個朋友每次都遲到。」
 
-他想了一下，說：「沒有。」
+你放走了他。
 
-你說：「那就是了。」
+第三個是一個推著板車的老人，車上蓋著一層布，輪廓可疑。你掀開那塊布。
 
-他沒有回答，但你覺得老德又找回了他的自信。`
+裡面是蔬菜。
+
+老德說：「那塊布是我建議他蓋的，不然菜會被曬壞。」
+
+老人感謝地看了老德一眼，走了。
+
+犯了這麼多的錯，你心虛地看了老德一眼，擔心他會揭穿你的偵探謊言，但老德只是平靜又認真地看著每個過往的行人。
+
+這時，隊伍裡走過來一個著裝整齊、文件齊全、神情平靜的中年男子。
+
+你看了他一眼，沒有任何問題。
+
+但老德卻走上前，攔住了男人：「等一下。」
+
+他看著那個男子，問：「你的貨從哪裡來？」
+
+男子的眼神閃爍了一下，但沒有逃過老德的眼睛。
+
+後來查出來，那個人的貨裡夾帶了走私物資。
+
+你站在旁邊，推了推眼鏡。你沒有戴眼鏡，但你覺得這個時刻需要這個動作。
+
+「這，」你說，「就是二十年和新手的經驗差距。」
+
+老德朝著你皺起了眉頭。
+
+你知道這個皺眉的表情，和你第一次見到他時所皺起的眉頭，完全不一樣了。`
+      },
+      {
+        label: '「當著大家的面罵他怠忽職守」', req: null, reqLabel: '',
+        story: `你在老德面前站定，然後開始罵他。
+
+不是普通的罵，是那種老兵罵新兵的罵法：聲音不大，但每個字都擲地有聲，罵的每一條都有具體的事由。怠忽職守、放任問題擴大、守了二十年不如一個新兵、連基本的判斷都信不過自己……
+
+城門附近的人陸陸續續停下來，側目而視。
+
+有人交換了一個眼神，有人站遠一點，等著看接下來發生什麼事。
+
+老德的臉色變了。他的手握緊了，眉頭壓下來，熟悉他的人都知道：老德要爆發了。
+
+但他沒有爆發。
+
+因為你罵他的方式，讓他想起了一個人。
+
+那是一個老兵，在他還是新兵的時候，手把手教他怎麼守城門。那個人也是這樣罵人的：「那個車，你看了車底沒有？你看了，你就說你看了。你沒看，就是沒看，不要告訴我你覺得應該沒問題。」
+
+你罵人的身影，和老兵重疊，過往的回憶彷彿歷歷在目，讓老德恍了神，怔怔地被你罵著。
+
+見沒有熱鬧可以看，城門附近圍觀的人陸陸續續散了。直到你能罵的都罵完了，老德還站在原地。
+
+然後他冷冷地說：「你罵完了嗎？」
+
+「罵完了，」你說。
+
+他點了點頭，走向城門。
+
+那天下午，他攔了幾個文件沒有問題、但他感覺有問題的人，多問了一句，其中一個查出了問題。
+
+你在遠處看著，一邊想著為什麼老德被罵了一頓就恢復正常了，難到他是 M？就在這個想法浮上心頭時，你感覺到老德向你掃來一記冷峻的目光。
+
+你不敢再多想，快步離開。`
       }
     ]
   }
@@ -3320,7 +4096,6 @@ function renderChapter2() {
 
   if (done) {
     const choices = state.progress.ch2.choices || [];
-    const showPointsBtn = state.progress.ch2.freeGranted && !state.progress.ch2.endingRead;
 
     // Rebuild task history from recorded choices
     const taskHistory = CH2_TASKS.map((t, i) => {
@@ -3333,7 +4108,7 @@ function renderChapter2() {
         <div class="section-title" style="margin-top:28px">✦ 任務 ${i + 1} / 3｜${t.icon} ${t.name}</div>
         <div class="story-text" style="margin-bottom:16px">${t.intro}</div>
         <div class="ornament">— ✦ —</div>
-        <p style="font-size:11px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 8px">✦ ${optLabel}</p>
+        <p style="font-size:12px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 8px">✦ ${optLabel}</p>
         <div class="story-text" style="margin-bottom:8px">${opt.story}</div>`;
     }).join('');
 
@@ -3346,11 +4121,8 @@ function renderChapter2() {
         <div class="ornament" style="margin-top:28px">— ✦ —</div>
         <div class="section-title" style="margin-top:24px">✦ 任務完成</div>
         <div class="story-text" style="margin-bottom:12px">${STORY_CH2_END}</div>
-        <p style="font-size:12px;color:var(--gold);letter-spacing:0.05em;margin-bottom:24px">第二章任務已完成，獲得獎勵 1 點自由屬性點。</p>
-        ${showPointsBtn
-          ? `<button class="btn btn-gold" onclick="claimCh2FreePoints()">✦ 前往分配點數</button>`
-          : `<button class="btn btn-gold" onclick="backToMap()">返回旅程地圖</button>`
-        }
+        <p style="font-size:13px;color:var(--gold);letter-spacing:0.05em;margin-bottom:24px">第二章任務已完成。</p>
+        <button class="btn btn-gold" onclick="backToMap()">返回旅程地圖</button>
       </div>`;
     return;
   }
@@ -3378,7 +4150,7 @@ function renderCh2Task(task, stats) {
   el.innerHTML = `
     <div class="story-text" style="margin-bottom:20px">${task.intro}</div>
     <div class="ornament">— ✦ —</div>
-    <p style="font-size:12px;color:var(--ink-light);margin:12px 0 14px;letter-spacing:0.05em">選擇你的處理方式：</p>
+    <p style="font-size:13px;color:var(--ink-light);margin:12px 0 14px;letter-spacing:0.05em">選擇你的處理方式：</p>
     <div style="display:flex;flex-direction:column;gap:10px" id="ch2Options"></div>`;
 
   const optEl = document.getElementById('ch2Options');
@@ -3392,9 +4164,9 @@ function renderCh2Task(task, stats) {
     btn.innerHTML = `
       <div class="book-info">
         <div class="book-title" style="font-size:14px">${opt.label.replace(/^[\p{Emoji}\s]+/u, '').trim()}</div>
-        ${req ? `<div class="book-hint" style="font-size:11px;color:var(--ink-light)">${opt.reqLabel}</div>` : ''}
+        ${req ? `<div class="book-hint" style="font-size:12px;color:var(--ink-light)">${opt.reqLabel}</div>` : ''}
       </div>
-      ${locked ? `<span class="book-badge" style="background:rgba(90,62,43,0.1);color:var(--ink-light);border:1px solid var(--parchment-deep);font-size:9px;padding:2px 6px">🔒 未達門檻</span>` : ''}`;
+      ${locked ? `<span class="book-badge" style="background:rgba(90,62,43,0.1);color:var(--ink-light);border:1px solid var(--parchment-deep);font-size:10px;padding:2px 6px">🔒 未達門檻</span>` : ''}`;
     if (!locked) btn.onclick = () => showCh2Result(task, idx);
     optEl.appendChild(btn);
   });
@@ -3415,7 +4187,7 @@ function showCh2Result(task, optIdx) {
   el.innerHTML = `
     <div class="story-text" style="margin-bottom:20px">${task.intro}</div>
     <div class="ornament">— ✦ —</div>
-    <p style="font-size:11px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 8px">✦ ${optLabel}</p>
+    <p style="font-size:12px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 8px">✦ ${optLabel}</p>
     <div class="story-text" style="margin-bottom:20px">${opt.story}</div>
     <div class="reader-actions" style="margin-top:16px">
       <button class="btn btn-gold" onclick="completeCh2Task(${taskIdx})">
@@ -3424,19 +4196,49 @@ function showCh2Result(task, optIdx) {
     </div>`;
 }
 
-const CH2_FREE_POINTS = 1;  // Free attribute points granted after Chapter 2
-
 function completeCh2Task(taskIdx) {
   if (!state.progress.ch2) state.progress.ch2 = { task: 0, done: false };
   const next = taskIdx + 1;
   if (next >= CH2_TASKS.length) {
-    const firstTime = !state.progress.ch2.done && !state.progress.ch2.freeGranted;
+    const firstTime = !state.progress.ch2.done;
     state.progress.ch2.done = true;
     state.progress.ch2.task = next;
+
+    // Check Ch2 achievements (only on first completion)
     if (firstTime) {
-      state.progress.ch2.freeGranted = true;
-      grantFreePoints(CH2_FREE_POINTS);
+      if (!state.achievements) state.achievements = [];
+      const choices = state.progress.ch2.choices || [];
+      let earnedCh2Set = null;
+      for (const set of CH2_ACHIEVEMENT_SETS) {
+        if (!state.achievements.includes(set.id) && set.check(choices)) {
+          earnedCh2Set = set;
+          break;
+        }
+      }
+      grantFreePoints(1);  // 第二章完成一律給一次
+      const popup = document.getElementById('bonusPopup');
+      popup.dataset.action = 'ch2';
+      if (earnedCh2Set) {
+        state.achievements.push(earnedCh2Set.id);
+        saveState();
+        renderAchievements();
+        document.getElementById('bonusPopupIcon').textContent = '🏆';
+        document.getElementById('bonusPopupTitle').textContent = '獲得成就';
+        document.getElementById('bonusPopupText').innerHTML = `「${earnedCh2Set.name}」`;
+        popup.dataset.action = 'ch2_ach';  // 有成就路線，關閉後補 toast
+      } else {
+        document.getElementById('bonusPopupIcon').textContent = '⚔️';
+        document.getElementById('bonusPopupTitle').textContent = '第二章完成';
+        document.getElementById('bonusPopupText').innerHTML =
+          `<span class="bonus-stat-highlight">獲得 1 點自由屬性點</span><br>` +
+          `<span style="font-size:12px;color:var(--ink-light)">可分配到任何一項能力（力量／智慧／影響力）。</span>`;
+        popup.dataset.action = 'ch2';
+      }
+      popup.dataset.complete = '';
+      popup.classList.add('open');
+      return;
     }
+
     saveState();
     renderChapter2();
     setTimeout(() => {
@@ -3463,464 +4265,745 @@ function completeCh2Task(taskIdx) {
 }
 
 // ══════════════════════════════════════════════
-// CHAPTER 3 RENDER (出征) — 任務尚未實作
-// ══════════════════════════════════════════════
-// ══════════════════════════════════════════════
 // CHAPTER 3 — 出征
 // ══════════════════════════════════════════════
 
-const CH3_PHASE1_OPTIONS = [
-  {
-    id: 'A', label: '「卸貨——推車——讓路」',
-    req: { stat:'str', min:3 }, flag:'攻',
-    story_good: `你親自扯開補給車的繃帶箱，把藥草往後拋給士兵。三十秒後，第一輛補給車被翻下路邊石縫，第二輛緊接著被推下。
-
-通道被清出來之後，士兵們終於從慌亂中恢復，藏身在岩石縫隙間躲避箭雨。
-
-就在最後一輛車被推下溝的瞬間，車底掉出一個用油布包得很嚴的小木盒。盒蓋鬆開，露出半根魔王軍規格的箭——但這支箭的羽毛是金色的，和你方才看見的所有箭都不一樣。你撿起來，塞進你的補給背包裡。不知道為什麼，你覺得它的背後應該有個祕密。`,
-    story_bad: `你拼命抓住補給車的車板，喊著讓士兵跟上，但車子比你預想的重。幾個士兵茫然地看著你，有人跟上來幫忙，有人沒有動。整個過程比預想的慢了不少——每一秒都有箭矢在旁邊掠過。
-
-最後路是清出來了，但花費的時間讓更多士兵在空曠地帶暴露在箭雨下。你渾身是汗，找了個掩體蹲下去，發現手背上多了幾道磨破皮的痕跡。`,
-    items_good: [{ tag:'線索', name:'金羽異箭', desc:'羽毛是金色的，與魔王軍制式箭矢不同。背後應該有個故事。' }],
-    items_bad: []
-  },
-  {
-    id: 'B', label: '「車隊就地反用」',
-    req: { stat:'wis', min:3 }, flag:'智',
-    story_good: `「全員蹲下！把車翻過來當作掩體！」
-
-你下令把卡住的補給車就地翻倒，車板朝外。箭雨在車板上釘出密密麻麻的洞，蹲在車輛後面的士兵終於獲得喘息的機會。
-
-你蹲在最後一輛車的陰影裡，瞥見岩壁陰影裡有東西被風吹得露出來——一截半燒的捲軸，卡在石縫裡。你伸手抽出來。是魔王軍的傳令旗，信物上有一個你不認識的紋章。紋章下方，寫著一個日期——比這次出征還要早將近一個月。`,
-    story_bad: `你喊出命令，但執行起來一塌糊塗——有人把車翻到面對錯誤的方向，有人翻完之後不知道自己該蹲在哪一側，還有兩個人撞在一起。大概一半的車形成了勉強堪用的掩護，另一半橫七豎八卡在路中間。
-
-箭雨在車板上釘出洞，但掩體位置分散，士兵各自找地方趴著。你一直在不同的車板之間來回協調，手忙腳亂，沒有空閒去注意岩壁縫隙裡的東西。`,
-    items_good: [{ tag:'線索', name:'半焦傳令旗', desc:'魔王軍的傳令旗，紋章日期比這次出征早了將近一個月。' }],
-    items_bad: []
-  },
-  {
-    id: 'C', label: '「化整為零」',
-    req: { stat:'cha', min:3 }, flag:'合',
-    story_good: `你抓住身旁慌亂的三個士兵，把他們的肩膀按住。
-
-「你、你、你，跟我來。把車上的東西分給每個能動的人——三人一組，背起來就走！」
-
-物資化整為零，車隊不再是負擔，整支隊伍重新流動起來。`,
-    story_bad: `你抓住身旁慌亂的三個士兵，把他們的肩膀按住，說：「三人一組，背起來就走！」
-
-但指令說得不夠俐落。
-
-混亂的戰場上有人湊不齊三人小組，有人搞不清楚要背什麼東西，於是——有人去數人頭，有人去找東西背，有人站在原地等更具體的說明。
-
-一部分的物資分出去了，隊伍也勉強流動起來，只是動的方式比較像是緩慢厚重的泥沙流。`,
-    items_good: [],
-    items_bad: []
-  }
-];
-
-const CH3_SIDE_OPTIONS = [
-  {
-    id: '拉', label: '🤝 拉律師一把',
-    story:`你不顧危險衝出掩體，伸手把律師拉了一把。
-
-律師才終於回過神來，哆哆嗦嗦地咕噥著「不該是這樣的……不該是這樣的……」
-
-此時，你注意到一張破碎的紙片從律師身上落下。你默默地踩住紙片，趁著沒人注意時撿起。
-
-殘片只剩幾個字：「……條款三……已確認……」信末有一個模糊的日期。
-
-你看了一會兒，把殘片塞入懷裡。你不知道這代表什麼。但你知道，你應該帶回去給薇爾達。`,
-    items:[{ tag:'線索', name:'密信殘片', desc:'只剩幾個字：「……條款三……已確認……」信末有一個模糊的日期。應帶回給薇爾達。' }]
-  },
-  {
-    id: '放', label: '👁 放任他不管',
-    story:`你決定不管律師。
-
-你蹲低，藉著掩體看戰場。
-
-這時你才注意到——岩壁上有一個影子比其他敵軍的動作慢了半拍。他站起來時，視線掃過下方，停在律師身上停了一秒，然後才舉弓。
-
-那不是隨機的瞄準。那是確認過目標的眼神。
-
-一道箭矢隨即從律師耳邊擦過，與死亡擦肩的恐懼終於讓律師回神，他連滾帶爬地來到掩體旁。
-
-難道是有人特意在狙擊遠征軍的指揮官嗎？`,
-    items:[{ tag:'情報', name:'狙擊律師的眼神', desc:'魔王軍似乎掌握遠征軍指揮系統的情報。那個影子確認過目標才舉弓。' }]
-  }
-];
-
-const CH3_PHASE2_OPTIONS = [
-  {
-    id: 'A', label: '「弓兵反擊」',
-    req: { stat:'str', min:3 }, flag:'攻',
-    story_good: `你召集殘存的弓兵，仰角結陣。
-
-「不要瞄準，密集射擊！射到他們不敢探頭！」
-
-密集的箭矢讓岩壁邊緣的魔王軍紛紛躲避，遠征軍的壓力驟減。
-
-只見一名士兵的箭擦過岩壁邊緣，傳來一聲悶哼——一個身影從上面滾下來，重重摔在山道上。他是魔王軍的傳令兵，腿斷了。你立即命人審問，從他口中得知魔王軍指揮官的所在位置。`,
-    story_bad: `你召集了幾個弓兵，讓他們仰角射擊，但整列的密集度不夠——你找不到足夠的人，或者找到的人站位不對，箭矢稀稀落落地打在岩壁邊緣，沒有造成多大壓力。
-
-魔王軍稍微退縮了一點，讓遠征軍稍微喘息了片刻，但也只有片刻。`,
-    items_good: [{ tag:'情報', name:'魔王軍指揮官位置', desc:'從俘虜傳令兵口中得知。將影響第三段正面突破的劇情。' }],
-    items_bad: []
-  },
-  {
-    id: 'B', label: '「煙霧遮蔽」',
-    req: { stat:'wis', min:3 }, flag:'智',
-    story_good: `你想起補給車上有引火油。
-
-「把油倒在翻倒的車板上點火——將容易發煙的東西放到車板上！」
-
-周圍很快升起一片濃煙，使岩壁上的魔王軍看不清下方的狀況，箭雨也變得零星失準。
-
-你藉著煙霧的掩護貼著岩壁前進，忽然看見岩壁某段石縫上有一道剛剛留下的擦痕，一路向上延伸——是釘鞋底磨過的痕跡。那是魔王軍從上方下到山道的攀岩路線！`,
-    story_bad: `你指揮倒油生火，把能發煙的東西堆上去。火燒起來了，煙也升起來了——只是比你預想的薄。可能是風向，可能是引火物的比例估算有誤，煙霧在岩壁之間散開，沒有聚集成你預期能夠阻礙視線的濃煙。
-
-從上方往下看，隊伍的輪廓還是隱約可見。箭雨變得零散，準度不如之前。
-
-你藉著煙霧的掩護貼著岩壁前進，忽然看見岩壁某段石縫上有一道剛剛留下的擦痕，一路向上延伸——是釘鞋底磨過的痕跡。那是魔王軍從上方下到山道的攀岩路線！`,
-    items_good: [{ tag:'線索', name:'岩壁攀爬路徑', desc:'魔王軍從上方下來的攀岩路線。可用於反向爬上岩壁。' }],
-    items_bad: [{ tag:'線索', name:'岩壁攀爬路徑', desc:'魔王軍從上方下來的攀岩路線。可用於反向爬上岩壁。' }]
-  },
-  {
-    id: 'C', label: '「虛張聲勢」',
-    req: { stat:'cha', min:2 }, flag:'合',
-    story_good: `你深吸一口氣，啟用聲達法則。
-
-「北翼包抄到位！從山頂壓制！」
-
-你的聲音也同時在岩壁所有魔王軍的耳邊響起，他們開始慌亂回頭，箭雨立即緩了下來。
-
-就在你訝異「這招聲東擊西居然真的有用」的下一秒——遠方山脊上也傳來了連綿不絕的號角聲。
-
-你不知道那是哪一支部隊，但這來得正是時候的號角聲，讓魔王軍徹底陷入慌亂。（你後來才知道，那是路過的邊境哨所聽見動靜而吹響的號角。）`,
-    story_bad: `你深吸一口氣，啟用聲達法則，喊出「北翼包抄到位」，想要以聲東擊西戰術欺騙魔王軍。
-
-但你的節奏掌握得不夠準，語氣也不夠篤定。你的聲音是傳進了魔王軍的耳裡，聽起來像是慌亂之中隨意下達的命令。
-
-岩壁上有幾個魔王軍士兵回頭看了一下，另一些繼續射箭，沒有被騙到。箭雨略微稀疏了一點，但沒有讓他們陷入慌亂。
-
-不過魔王軍稍緩的攻勢，還是讓岩壁之下的遠征軍趁機獲得重整的機會。`,
-    items_good: [],
-    items_bad: []
-  }
-];
-
-const CH3_PHASE3_OPTIONS = [
-  {
-    id: 'A', label: '「正面突破」',
-    req: { stat:'str', min:3 }, flag:'攻',
-    story_good: `你依照之前從魔王軍傳令兵得來的情報，朝魔王軍指揮官的所在位置突襲。
-
-「前隊持盾結陣！後隊跟上！我們直取魔王軍指揮官！」
-
-你的命令傳到每個人耳裡，訓練有素的士兵們立即採取行動。魔王軍沒有意料到你們竟然能在這麼短的時間內重振旗鼓，頓時被殺得人仰馬翻、倉皇逃竄。
-
-在突圍的途中，你蹲下查看一個倒在路邊的魔王軍屍體——他腰帶上掛著一張地圖，標記著艾爾德倫王城周邊三條主要的補給線，每一條都打了紅叉。這不是這支埋伏小隊應該知道的情報。`,
-    story_bad: `你下令衝鋒，士兵們動起來了，但陣形沒有你想要的那麼整齊——前隊的盾陣有缺口，後隊跟不上節奏，整支隊伍像一個零件沒有鎖緊的機器，轉動著，但有點搖晃。
-
-魔王軍沒有完全措手不及。他們退了，但退得有秩序，留下幾個人拖延時間。你們衝出去了，付出的代價比預想的重一些。`,
-    items_good: [{ tag:'情報', name:'魔王軍補給線地圖', desc:'標記著艾爾德倫王城周邊三條主要補給線，每一條都打了紅叉。這不是這支埋伏小隊應該知道的情報。' }],
-    items_bad: []
-  },
-  {
-    id: 'B', label: '「側翼岩壁」',
-    req: { stat:'wis', min:3 }, flag:'智',
-    story_good: `你想起剛才在岩壁上看見的擦痕。
-
-「弓兵繼續壓制——其他人，跟我從側翼上岩壁！」
-
-藉著煙霧的掩護，你帶一隊精銳沿著魔王軍下來的攀爬路反向爬上岩壁。等魔王軍發現你們的身影出現在岩壁上時，他們已經失去了反擊的先機。你們很快擊退了岩壁上的魔王軍，確保了部隊撤離山谷的路線。
-
-你站在岩壁頂端俯瞰山道，看著自己的部隊有條不紊地通過下方。就在這時，你抬眼掃過對面的山脊——有一個披斗篷的人，在看著戰局。對方察覺你的視線，立刻轉身消失在山脊後。
-
-但那一眼你看清了——他的披風不是魔王軍的黑色，而是灰色。和王國後勤輔助部隊一樣的灰色。`,
-    story_bad: `你想起剛才在岩壁上看見的擦痕。
-
-「弓兵繼續壓制——其他人，跟我從側翼上岩壁！」
-
-藉著煙霧的掩護，你帶一隊精銳沿著魔王軍下來的攀爬路反向爬上岩壁。只是稀薄的煙霧不足以完全遮掩你們的身影，當你們快抵達岩壁頂端時，就已經被魔王軍發現。
-
-原本的奇襲失去了效果，你們付出了比預期還要慘烈的代價，終於將魔王軍趕下了岩壁。`,
-    items_good: [{ tag:'線索', name:'山脊上的灰袍人影', desc:'披風是王國後勤輔助部隊的灰色，卻在戰場對面的山脊上觀戰。' }],
-    items_bad: []
-  },
-  {
-    id: 'C', label: '「撤退」',
-    req: { stat:'cha', min:2 }, flag:'合',
-    story_good: `「全員聽令——後隊轉前隊！傷員先走！原路退出山道！」
-
-士兵們儘管疲憊，但隊伍仍以一種你沒想到的速度重新整理成有序的撤退陣型。
-
-撤回的途中，你看見路邊翻倒的公文箱——是副官隨身攜帶的那個，蓋子開著，文書散落一地。你蹲下去撿起最上面一張：是律師出發前親手寫下的行軍令，「北進路線審定，依直線最短原則裁示」，下方有薇爾達的批注「北山道狹窄，建議繞行」，那行批注被律師用紅筆劃掉了。副官今天帶著主力走那條路，走的是這道命令。你把它摺好，塞進懷裡。
-
-你看著狼狽但強打著精神撤離的眾人，只希望在魔王軍追上來之前，能有一點時間休整。`,
-    story_bad: `「全員聽令——後隊轉前隊！傷員先走！原路退出山道！」
-
-命令下了，但士兵們的反應速度不如你的預期。隊伍雖然動了，但不是那種有秩序的撤退，更像是一群疲憊的人同時試圖往後走，不時有人撞在一起。你一直在人群裡穿梭，把人推向正確的方向，喉嚨都喊啞了。`,
-    items_good: [{ tag:'物品', name:'律師劃掉的軍令草稿', desc:'薇爾達建議繞行的批注被律師用紅筆劃掉。副官帶主力走那條路，走的是這道命令。' }],
-    items_bad: []
-  }
-];
-
-const CH3_ENDINGS = {
-  '3': { title:'劫後', body:`這場突如其來，卻也是意料之中的戰鬥，結束了。
-
-儘管腳步聲、呻吟聲、低沉的呼喚聲不絕於耳，你卻覺得此刻無比安靜。
-
-這時，副官走到你面前，敬了個禮：「謝謝你今天挺身而出，如果沒有你，後果可能不堪設想。」副官停頓了一下，又繼續說：「這場戰鬥我方陣亡八人，重傷十一人。」
-
-他像是在向上級報告一樣，繼續念出了傷亡名單。
-
-你在重傷名單裡，聽見了奧立維的名字。
-
-想起這個開朗的大男孩，你的心不禁糾結了一下。
-
-律師是在夕陽開始沉的時候出現的。他帶著那十幾個精銳從山道北端走進來。他的猩紅斗篷沒有破損，劍還插在鞘裡。他掃了一眼四周，走向副官：
-
-「你讓我失望了，」他說，「我交代你帶主力前進，結果呢——這樣的傷亡，這樣的混亂，這就是你帶兵的方式？」
-
-他繼續措辭嚴整的責備副官大意失職、辜負信任、讓士兵白白傷亡，羅列出大大小小數十條罪狀。周圍的士兵沒有人抬頭，沒有人開口。有幾個人的手握緊了，但他們是士兵，服從是他們的本能。
-
-副官低著頭，肩膀繃得很緊，一句話也沒有說。
-
-你看著這一幕，最後還是開口了。
-
-「勇者大人，」你說，「副官只是依照你的命令行動。」
-
-律師轉向你，停頓了一下，說：「整隊，清點物資——我們繼續遠征。」
-
-儘管聽到了律師的命令，但沒有人行動。他們不是抗命，只是沒有人有力氣站起來，沒有人拿起武器，沒有人說話，副官也依然站在原地，沒有接話。
-
-你說：「勇者大人，糧草折損大半，傷員撐不住長途行軍。能不能先回王城，等重整之後再議？」
-
-你平靜地說出了眾人的心聲。
-
-律師沉默了很長時間。「先回王城。」
-
-他轉身走向隊伍前方，沒有再說話。` },
-  '2': { title:'代價', body:`這場突如其來，卻也是意料之中的戰鬥，結束了。
-
-儘管腳步聲、呻吟聲、低沉的呼喚聲不絕於耳，你卻覺得此刻無比安靜。
-
-這時，副官走到你面前，敬了個禮：「謝謝你今天挺身而出，如果沒有你，後果可能不堪設想。」副官停頓了一下，又繼續說：「這場戰鬥我方陣亡八人，重傷十一人。」
-
-他像是在向上級報告一樣，繼續念出了傷亡名單。
-
-你在重傷名單裡，聽見了奧立維的名字。
-
-想起這個開朗的大男孩，你的心不禁糾結了一下。
-
-律師是在夕陽開始沉的時候出現的。他帶著那十幾個精銳從山道北端走進來。他的猩紅斗篷沒有破損，劍還插在鞘裡。他掃了一眼四周，走向副官：
-
-「你讓我失望了，」他說，「我交代你帶主力前進，結果呢——這樣的傷亡，這樣的混亂，這就是你帶兵的方式？」
-
-他繼續措辭嚴整的責備副官大意失職、辜負信任、讓士兵白白傷亡，羅列出大大小小數十條罪狀。周圍的士兵沒有人抬頭，沒有人開口。有幾個人的手握緊了，但他們是士兵，服從是他們的本能。
-
-副官低著頭，肩膀繃得很緊，一句話也沒有說。
-
-你看著這一幕，最後還是開口了。
-
-「勇者大人，」你說，「副官只是依照你的命令行動。」
-
-律師轉向你，停頓了一下，說：「整隊，清點物資——我們繼續遠征。」
-
-儘管聽到了律師的命令，但沒有人行動。他們不是抗命，只是沒有人有力氣站起來，沒有人拿起武器，沒有人說話，副官也依然站在原地，沒有接話。
-
-你說：「勇者大人，糧草折損大半，傷員撐不住長途行軍。能不能先回王城，等重整之後再議？」
-
-你平靜地說出了眾人的心聲。
-
-律師沉默了很長時間。「先回王城。」
-
-他轉身走向隊伍前方，沒有再說話。` },
-  '1': { title:'蹣跚', body:`這場突如其來，卻也是意料之中的戰鬥，結束了。
-
-儘管腳步聲、呻吟聲、低沉的呼喚聲不絕於耳，你卻覺得此刻無比安靜。
-
-這時，副官走到你面前，敬了個禮：「謝謝你今天挺身而出，如果沒有你，後果可能不堪設想。」副官停頓了一下，又繼續說：「這場戰鬥我方陣亡八人，重傷十一人。」
-
-他像是在向上級報告一樣，繼續念出了傷亡名單。
-
-你在重傷名單裡，聽見了奧立維的名字。
-
-想起這個開朗的大男孩，你的心不禁糾結了一下。
-
-律師是在夕陽開始沉的時候出現的。他帶著那十幾個精銳從山道北端走進來。他的猩紅斗篷沒有破損，劍還插在鞘裡。他掃了一眼四周，走向副官：
-
-「你讓我失望了，」他說，「我交代你帶主力前進，結果呢——這樣的傷亡，這樣的混亂，這就是你帶兵的方式？」
-
-他繼續措辭嚴整的責備副官大意失職、辜負信任、讓士兵白白傷亡，羅列出大大小小數十條罪狀。周圍的士兵沒有人抬頭，沒有人開口。有幾個人的手握緊了，但他們是士兵，服從是他們的本能。
-
-副官低著頭，肩膀繃得很緊，一句話也沒有說。
-
-你看著這一幕，最後還是開口了。
-
-「勇者大人，」你說，「副官只是依照你的命令行動。」
-
-律師轉向你，停頓了一下，說：「整隊，清點物資——我們繼續遠征。」
-
-儘管聽到了律師的命令，但沒有人行動。他們不是抗命，只是沒有人有力氣站起來，沒有人拿起武器，沒有人說話，副官也依然站在原地，沒有接話。
-
-你說：「勇者大人，糧草折損大半，傷員撐不住長途行軍。能不能先回王城，等重整之後再議？」
-
-你平靜地說出了眾人的心聲。
-
-律師沉默了很長時間。「先回王城。」
-
-他轉身走向隊伍前方，沒有再說話。` },
-  '0': { title:'沉默', body:`這場突如其來，卻也是意料之中的戰鬥，結束了。
-
-儘管腳步聲、呻吟聲、低沉的呼喚聲不絕於耳，你卻覺得此刻無比安靜。
-
-這時，副官走到你面前，敬了個禮：「謝謝你今天挺身而出，如果沒有你，後果可能不堪設想。」副官停頓了一下，又繼續說：「這場戰鬥我方陣亡八人，重傷十一人。」
-
-他像是在向上級報告一樣，繼續念出了傷亡名單。
-
-你在重傷名單裡，聽見了奧立維的名字。
-
-想起這個開朗的大男孩，你的心不禁糾結了一下。
-
-律師是在夕陽開始沉的時候出現的。他帶著那十幾個精銳從山道北端走進來。他的猩紅斗篷沒有破損，劍還插在鞘裡。他掃了一眼四周，走向副官：
-
-「你讓我失望了，」他說，「我交代你帶主力前進，結果呢——這樣的傷亡，這樣的混亂，這就是你帶兵的方式？」
-
-他繼續措辭嚴整的責備副官大意失職、辜負信任、讓士兵白白傷亡，羅列出大大小小數十條罪狀。周圍的士兵沒有人抬頭，沒有人開口。有幾個人的手握緊了，但他們是士兵，服從是他們的本能。
-
-副官低著頭，肩膀繃得很緊，一句話也沒有說。
-
-你看著這一幕，最後還是開口了。
-
-「勇者大人，」你說，「副官只是依照你的命令行動。」
-
-律師轉向你，停頓了一下，說：「整隊，清點物資——我們繼續遠征。」
-
-儘管聽到了律師的命令，但沒有人行動。他們不是抗命，只是沒有人有力氣站起來，沒有人拿起武器，沒有人說話，副官也依然站在原地，沒有接話。
-
-你說：「勇者大人，糧草折損大半，傷員撐不住長途行軍。能不能先回王城，等重整之後再議？」
-
-你平靜地說出了眾人的心聲。
-
-律師沉默了很長時間。「先回王城。」
-
-他轉身走向隊伍前方，沒有再說話。` }
-};
-
-
-const CH3_PHASE1_INTRO = `你抓住身旁那個正茫然站著的隨軍魔法師——他是後勤組編制裡負責簡單治療的小法師——將他拽到自己面前。
-
-「有辦法讓所有人都聽到我的聲音嗎？」
-
-「聲達法則嗎？」
-
-「對！快對我施法！」
-
-他愣了半秒，指尖一道淡光點在你喉嚨上。
-
-「全部停下！聽我說！」
-
-你的聲音同時在所有人的耳邊響起——不是像喇叭一樣播放，而是像貼著耳朵說話一般。整支部隊的動作，在那一瞬間都停滯了一下。
-
-你深吸一口氣，掃了一眼戰場。前隊想往前擠，後隊想往後逃，中間的補給車隊卡死在最窄處。馬被箭傷了，車輪嵌進石縫，整支部隊像一條被掐住中段的繩子。
-
-這個畫面讓你想起了《茂林源記》——遠征軍像是必須依照詔令行動但卻無法隨機應變的飛鷹王朝，魔王軍是早就在高處等待的「陰謀黨羽」。而你，大概是那個戰術靈活多變的「遊俠」吧？
-
-你迎向眾人看著你的目光，當務之急是必須先把這個結解開。`;
-
-const CH3_SIDE_INTRO = `堵塞解決後，隊伍的混亂稍微平息。
-
-但魔王軍的箭雨還未停歇。
-
-而律師——那個遠征軍真正的指揮官——還愣在補給車翻倒的位置，劍出鞘，嘴開合，整個人僵在原地。
-
-你只有幾秒鐘的時間。`;
-
-const CH3_PHASE2_INTRO = `車隊的堵塞解開了，但岩壁上的魔王軍仍然居高臨下，箭雨還在不停落下。副官站在你旁邊，等著你的下一個命令。你抬頭看了一眼岩壁的高度。下一波箭雨已經拉開弓。`;
-
-const CH3_PHASE3_INTRO = `遠征軍終於從被伏擊的混亂中恢復秩序了，但山道裡危急的情勢還沒結束。副官看著你，等你開口。此刻，所有人都在等你做最後一個決定。`;
-
-// ── helper: render option items display ───────────────────────────────────────
-function ch3ItemsHtml(items) {
-  if (!items || !items.length) return '';
-  return items.map(item =>
-    `<div class="ornament">— ✦ —</div>
-     <p style="font-size:11px;color:var(--gold);letter-spacing:0.1em;margin:10px 0 4px">✦ 獲得道具｜${item.tag}：${item.name}</p>
-     <p style="font-size:12px;color:var(--ink-light);margin-bottom:12px">${item.desc}</p>`
-  ).join('');
+const CH3_MAZE_INTRO = `「根據斥候的回報以及勇者的狀況，我們對這個迷宮的情報並不多。」你對著副官說，「看來只有實際闖看看才知道怎麼解除了。」
+
+雖然你的決定和律師相同，但副官並沒有出聲提醒你，不知道為什麼，他看向你目光裡多了一些信任。
+
+你拿起自己的後勤裝備，確認火把與物資的數量之後，便往山道入口走過去。你才走了幾步，背後傳來腳步聲——是奧立維跟上來了，他說後勤沒事做，可以幫你提補給包。
+
+看著他燦爛的微笑，你該怎麼做……`;
+
+// ══════════════════════════════════════════════
+// CHAPTER 3 — 魔法迷宮系統
+// ══════════════════════════════════════════════
+
+const MAZE_TORCH_SIZE = 5; // 每根火把可進行的行動次數
+
+function getMazeTorchText(actionsUsed, torchTotal) {
+  const actionsLeft = torchTotal * MAZE_TORCH_SIZE - actionsUsed;
+  if (actionsLeft <= 0) return '所有火把都熄滅了。';
+  const names = ['第一', '第二', '第三', '第四', '第五', '第六'];
+  const idx  = Math.floor(actionsUsed / MAZE_TORCH_SIZE);
+  const rem  = MAZE_TORCH_SIZE - (actionsUsed % MAZE_TORCH_SIZE);
+  const name = (names[idx] || `第${idx + 1}`) + '根火把';
+  const desc = rem === MAZE_TORCH_SIZE ? '燃得正旺' :
+               rem >= 4 ? '還有大半截' :
+               rem === 3 ? '剩下一半了' :
+               rem === 2 ? '已燃去大半' : '只剩一小截了';
+  return `${name}，${desc}。`;
 }
 
-// ── helper: build option buttons ──────────────────────────────────────────────
-function ch3BuildOptionBtn(label, reqLabel, locked, lockedReason, onclickFn) {
-  const btn = document.createElement('div');
-  btn.className = 'book-item' + (locked ? ' read' : '');
-  btn.style.cursor = locked ? 'default' : 'pointer';
-  btn.innerHTML = `
-    <div class="book-info">
-      <div class="book-title" style="font-size:14px">${label}</div>
-      ${reqLabel ? `<div class="book-hint" style="font-size:11px;color:var(--ink-light)">${reqLabel}</div>` : ''}
-      ${locked && lockedReason ? `<div class="book-hint" style="font-size:11px;color:var(--ink-light)">${lockedReason}</div>` : ''}
+const MAZE_ROOMS = {
+  entrance: {
+    id: 'entrance', name: '入口廣場', hasInlineHotspots: true,
+    sceneText: `山道在這裡突然變得寬闊，石壁向兩側退開，留出一個拱形入口。<br><br>拱門兩側各刻了一列<span data-maze-hotspot="ent_runes">符文</span>，發著很淡的藍光——像燭火燃到最後，即將熄滅前的光亮。<br><br>你腳下的地面有很多<span data-maze-hotspot="ent_footprints">腳印</span>，這些腳印延伸向不同的方向，然後又從不同的方向走回入口。<br><br>有一塊大石頭立在拱門陰影裡，上面刻著王國斥候所留下的<span data-maze-hotspot="ent_stone">記號</span>，石頭旁還有一個被丟棄在一旁的<span data-maze-hotspot="ent_backpack">背包</span>。<br><br>奧立維站在你旁邊，往裡頭看了一眼，說：「感覺不是很妙。」<br><br>你說你也有同樣的感覺。<br><br>「但我們還是要進去。」<br><br>「對。」<br><br>你舉起火把，搖曳的火光映照在石拱門上。門後，延伸出三條走道，分別通往不同方向。<br><br><span style="display:block;background:rgba(44,24,16,0.06);border-left:3px solid var(--gold);padding:10px 14px;font-size:13px;color:var(--ink-faded);line-height:1.8;letter-spacing:0.03em">現在，你可以決定是否要調查入口廣場內的可疑物品（點擊粗體文字），或是移動到其他房間。調查物品或移動到其他房間，都會消耗火把的使用時間。你必須在所有火把燃盡之前，找出離開迷宮的方法。</span>`,
+    exits: [
+      { dir: '向左', label: '哨站殘骸', roomId: 'guardPost' },
+      { dir: '直走', label: '藤蔓走廊', roomId: 'vineCorr' },
+      { dir: '向右', label: '坍塌大廳', roomId: 'collapseHall' }
+    ],
+    hotspots: [
+      {
+        id: 'ent_runes', label: '符文',
+        text: `你湊近拱門，翻開書比對。<br><br>書上說：魔法迷宮的邊界以封閉型符文標記，主要功能是防止迷宮效果向外擴散——不是傷害進入者。<br><br>也就是說，除非有陷阱，否則單純進入迷宮並不會發生危險。<br><br>你把這個訊息告訴奧立維，想要安撫他緊張的心情。<br><br>他點了點頭，說：「所以我們肯定能活著走進去，但出來就未必的意思。」<br><br>你覺得他說得對又不完全對。`,
+        item: null
+      },
+      {
+        id: 'ent_footprints', label: '腳印',
+        text: `你蹲下來，仔細數腳印的數量。<br><br>走進去迷宮的數量：六組。<br>從迷宮出來的數量：七組。<br><br>你數了第二遍，數量還是不對。<br><br>你和奧立維對看了一眼，他低頭再數了一次，說：「會不會是有人踩著前人的腳印，所以出來的腳印才會多了一組？」<br><br>你說對，應該是這樣。<br><br>你們都覺得這個解釋合理，都選擇相信這個解釋。`,
+        item: null
+      },
+      {
+        id: 'ent_stone', label: '記號石頭',
+        text: `你把手放在斥候所留下的記號上，好奇在每個房間都留下記號，能不能作為破解迷宮的方法。此時，奧立維問：「你要不要也刻一個？」<br><br>你搖了搖頭，或許下一個房間再試試看吧。`,
+        item: null
+      },
+      {
+        id: 'ent_backpack', label: '廢棄背包',
+        text: `背包裡的東西不多：一個已經空了的水袋、幾根折斷的火柴，還有一件捲成一團的深色斗篷。<br><br>你把斗篷抖開看了看，沒有破損，布料也還算厚實。<br><br>奧立維從你肩膀旁探過頭，說：「這件不錯。」<br><br>你說他如果喜歡就自己拿著。<br><br>你繼續翻背包，聽到身後衣料摩擦的聲音。<br><br>你轉過身。<br><br>奧立維不見了。<br><br>你環顧四周，沉默了一下，然後聽到身旁傳來他的聲音：「我在這裡。」<br><br>沒有人。<br><br>「這裡。」斗篷從空中被掀起一角，露出奧立維的臉。他看起來既驚訝又有點高興。「這件斗篷可以隱形。」<br><br>你們對視了一秒。你把斗篷從他身上拿下來，放進自己的背包。<br><br>奧立維問你是不是打算用。<br><br>你說說不定用得上。`,
+        item: { tag: '道具', name: '隱形斗篷', desc: '穿上之後完全隱形，脫下來之前最好先說一聲。' }
+      }
+    ]
+  },
+  guardPost: {
+    id: 'guardPost', name: '哨站殘骸', hasInlineHotspots: true,
+    sceneText: `這個房間原本可能是一個哨站，或者至少有人試圖把它佈置成那樣。<br><br>靠牆有一張翻倒的木桌，桌腳斷了一根。牆邊有一個破舊的武器架，只是架子上除了厚厚的灰塵之外，沒有任何武器。<br><br>地上散落著<span data-maze-hotspot="gp_docs">文件</span>、一個翻倒的<span data-maze-hotspot="gp_box">木箱</span>，還有各種說不清楚用途的雜物。靠近出口的石壁上有<span data-maze-hotspot="gp_writing">幾行字</span>。<br><br>整個地方給人的感覺，是被一群走得很匆忙的人留下的。`,
+    exits: [
+      { dir: '返回', label: '入口廣場', roomId: 'entrance' }
+    ],
+    hotspots: [
+      {
+        id: 'gp_docs', label: '散落的文件',
+        text: `你蹲下來，把地上的文件撿起來翻了翻。<br><br>大部分是無聊的行政指令——「哨站值勤規定」、「魔王軍第三後勤支援單位備忘錄」之類的。你翻到最後一頁，是一張粗糙的手繪圖，畫了幾個房間和連接它們的路線，其中有一個房間被重重地畫了個叉。<br><br>你不確定那個叉代表危險，還是其他意思。`,
+        item: null
+      },
+      {
+        id: 'gp_box', label: '木箱',
+        text: `你把木箱翻了過來，裡面幾乎是空的。<br><br>角落有一個刻了「第十三分隊」的鐵製飯盒、一根斷掉的蠟燭、還有一隻手套。<br><br>你看了看那隻手套，把它放進了包裡。另外半副手套應該在某個地方，或許在某個倒楣的第十三分隊成員手上。`,
+        item: { tag: '道具', name: '第十三分隊的單隻手套', desc: '只有一隻，另一隻不知道在哪裡。' }
+      },
+      {
+        id: 'gp_writing', label: '牆上的炭筆字',
+        text: `靠近出口的石壁上，有幾行潦草的字：<br><br>「迷宮第七天。方向感完全喪失。今天的配給只有半個麵包。」<br><br>下面一行：「不要往有聲音的地方走。」<br><br>最後一行，字體比前兩行小很多，像是後來補上去的：「也不要往沒有聲音的地方走。」`,
+        item: null
+      }
+    ]
+  },
+  vineCorr: {
+    id: 'vineCorr', name: '藤蔓走廊', hasInlineHotspots: true,
+    sceneText: `這條走廊幾乎已被藤蔓佔領。石壁、地面、頭頂，全都纏滿了深綠色的藤蔓，有的粗如手臂，有的細如髮絲，全部交纏在一起，形成一道密不透風的綠色牆壁。<br><br>走廊中央勉強留有一條可以通過的空間，但每走一步都要小心腳下的藤蔓絆腳。<br><br>靠牆有一塊幾乎被藤蔓完全遮住的<span data-maze-hotspot="vc_notice">公告牌</span>。藤蔓的某一處<span data-maze-hotspot="vc_bulge">鼓起來</span>，顯然裡面有什麼東西。地上有<span data-maze-hotspot="vc_footprint">腳印</span>，往走廊深處延伸過去，但沒有往回走的腳印。<br><br>走廊盡頭分叉成兩條路，偶爾傳來輕微的窸窣聲——但每次你側耳傾聽，聲音就停了。`,
+    exits: [
+      { dir: '返回', label: '入口廣場', roomId: 'entrance' },
+      { dir: '向左', label: '迷途花園', roomId: 'garden' },
+      { dir: '向右', label: '水鏡池',   roomId: 'mirrorPool' }
+    ],
+    hotspots: [
+      {
+        id: 'vc_notice', label: '公告牌',
+        text: `你費了些力氣把藤蔓撥開，看清楚上面的字：<br><br>「迷宮管理公告：本走廊藤蔓問題已申請維護，預計清除時間為——」<br><br>下面的日期被藤蔓蓋住了。<br><br>你又費了些力氣把那段藤蔓撥開，看清楚日期之後，沉默了一下。<br><br>那個日期是五十年前。`,
+        item: null
+      },
+      {
+        id: 'vc_bulge', label: '鼓起的藤蔓',
+        text: `你伸手戳了戳，確認不危險之後，開始費力地撥開藤蔓。<br><br>裡面是一副骨架。<br><br>骨架的姿勢很安詳，雙手交疊放在胸前，頭微微側向一邊，看起來像是自己決定躺進去的。<br><br>骨架的手指之間夾著一張便條：「我找到走廊的盡頭了。就是這裡。」`,
+        item: null
+      },
+      {
+        id: 'vc_footprint', label: '地上的腳印',
+        deathTrap: true,
+        achId: 'ch3_vineVictim',
+        text: `你蹲下來仔細看，認出這是個成年人的腳印，往走廊深處延伸過去。<br><br>有去無回的腳印，一直延伸向走廊深處。<br><br>你隱約覺得不對勁，但好奇心還是驅使你繼續前進。<br><br>你們不斷深入，走廊兩側的藤蔓越來越密、越來越厚，然後，腳印在某個地方停了。<br><br>你停下腳步，打量四周。<br><br>「所以，」奧立維在你身後輕聲說，「這就是腳印結束的地方。」<br><br>「對。」<br><br>「往回走吧。」<br><br>「嗯。」<br><br>當你們想要離開時，藤蔓像是感覺到你們的存在，緩緩地朝你們靠近。<br><br>☠ 你被藤蔓完全包裹，失去意識。<br><br>等你再次睜開眼睛，你發現自己回到了入口廣場。`
+      }
+    ]
+  },
+  collapseHall: {
+    id: 'collapseHall', name: '坍塌大廳', hasActions: true,
+    sceneText: `大廳的天花板坍塌了一大部分，巨大的碎石散落在大廳中央，只有幾根斷裂的石柱，搖搖欲墜地支撐著還沒塌落的部分。<br><br>大廳中央佇立著一副巨大的魔王軍鎧甲，鎧甲前一把看起來相當沉重的雙手劍插入地面，而鎧甲的雙手則按在雙手劍的劍柄上。你看不清楚鎧甲的面罩底下是否有人（或者該說是否有魔物），但你能感覺到鎧甲透露出不詳的氣息。<br><br>他身後的走廊分成左右兩條，左邊的走廊透出微弱的光線，右邊的走廊則是一片黑暗。<br><br>就在你還在觀察時，鎧甲像是醒來一般有了動靜。<br><br>此時你想要怎麼做？`,
+    hotspots: [],
+    clearedExits: [
+      { dir: '返回', label: '入口廣場', roomId: 'entrance' },
+      { dir: '向左', label: '符文書房', roomId: 'ruinedBook' },
+      { dir: '向右', label: '深坑', roomId: 'deepPit' }
+    ],
+    actions: [
+      { id: 'ch_retreat', label: '對不起，走錯房間了，我先告辭' },
+      { id: 'ch_left',    label: '它的反應速度一定不快的（往左）' },
+      { id: 'ch_right',   label: '它的反應速度一定不快的（往右）' },
+      { id: 'ch_charge',  label: '用氣勢嚇嚇它' },
+      { id: 'ch_talk',    label: '問它一個人在這裡會不會很寂寞' },
+      { id: 'ch_cloak',   label: '變個魔術給它看', requiresItem: 'ent_backpack' }
+    ]
+  },
+  ruinedBook: {
+    id: 'ruinedBook', name: '符文書房', hasInlineHotspots: true,
+    sceneText: `這是個堆滿書的小房間，三面牆的<span data-maze-hotspot="rb_books">書架</span>從地板到天花板都刻著符文，有幾本書用鎖鍊鎖著，有幾本的鎖已經生鏽掉落。還有一本書，給你的感覺好像是書本自己想用鎖將自己鎖住，但最後徒勞無功地放棄，你對這個念頭感覺到十分荒謬。<br><br>房間中央有一張<span data-maze-hotspot="rb_desk">書桌</span>，上面散落著紙張和幾個快乾掉的墨水瓶。靠後牆的地板上，有一個用粉筆畫出的<span data-maze-hotspot="rb_circle">符文陣</span>，但其中一個角的圖案被弄糊了。<br><br>滿房間的書籍，令房間內濃濃的灰塵霉味，也充滿了學術的氣息。`,
+    exits: [
+      { dir: '返回', label: '坍塌大廳', roomId: 'collapseHall' }
+    ],
+    hotspots: [
+      {
+        id: 'rb_books', label: '書架上的書',
+        text: `你隨手抽出幾本翻了翻。<br><br>第一本：《高階符文學：讓你的咒語看起來很嚇人》。內文前三頁是理論，第四頁之後是「符文字型選擇指南」，附有分類：「適合嚇小孩的字體」、「開會用起來比較有氣勢的字體」。<br><br>第二本：《迷宮管理員手冊》，用符文寫成，你完全看不懂。但你能認出其中一頁有個特別的圖案——和你記憶中某個地方的標記很像。<br><br>你把那一頁撕下來，折好放進口袋。`,
+        item: { tag: '道具', name: '迷宮管理員手冊的一頁', desc: '上面有一個符文圖案，用途不明。' }
+      },
+      {
+        id: 'rb_desk', label: '書桌上的紙張',
+        text: `紙張上密密麻麻全是符文運算，每行都很密集，看起來非常複雜。<br><br>你盯著看了一會兒，認出了最後一行的符文——那是「合計」。<br><br>這是一張採購清單。<br><br>內容包括：魔法蠟燭三十六根、防潮書架漆（附記：必須防魔法，普通漆沒用）、貓糧（兩箱），還有一行劃掉又重寫了三次的「迷宮擴建申請表格」。<br><br>最後一行用不同顏色的墨水補上，明顯是後來才加的：「離開之前記得關燈。」`,
+        item: null
+      },
+      {
+        id: 'rb_circle', label: '地板上的符文陣',
+        text: `你蹲下來仔細看。你看不懂符文，但這個陣的結構讓你覺得眼熟——按照某種邏輯，這應該是傳送陣。<br><br>但其中一個角的圖案已經模糊不清，顯然這個陣法已經失去作用。<br><br>奧立維拿著一本書在你旁邊蹲下來看了一會兒，說：「要不要按照書上的指示來修復這個陣法？」<br><br>你看了看奧立維手上的那本書，說：「但我們都不是魔法師，而且就算修好了，也不知道會將我們傳送到哪裡去。」<br><br>你想起剛才在路上遇到的陷阱，胃不禁升起了一股惡寒。`,
+        item: null
+      }
+    ]
+  },
+  garden: {
+    id: 'garden', name: '迷途花園', hasInlineHotspots: true,
+    sceneText: `這個地方看起來像是一座花園——有花圃、有蜿蜒的石板小徑、有一座<span data-maze-hotspot="gd_fountain">石造噴水池</span>，甚至有幾株看起來被修剪過的灌木。<br><br>明明沒有光源，但整個花園卻有一種柔和的昏黃亮度。花圃裡有一株<span data-maze-hotspot="gd_flower">在黑暗中發光的花</span>，格外顯眼。<br><br>花園裡有好幾條小徑，每一條都通往不同的方向，每個路口都立著<span data-maze-hotspot="gd_sign">路標</span>，但無論你們怎麼走，最終都會回到花園的入口。`,
+    exits: [
+      { dir: '返回', label: '藤蔓走廊', roomId: 'vineCorr' },
+      { dir: '不死心再探索一次', label: '迷途花園', roomId: 'garden' }
+    ],
+    hotspots: [
+      {
+        id: 'gd_sign', label: '路標',
+        text: `花園各個路口立著路標，上面用不同字體和箭頭標示著方向。<br><br>你仔細看了其中一根。<br><br>左邊：「花圃（左轉）」<br>右邊：「花圃（右轉）」<br>直走：「花圃（直走）」<br>往回：「花圃（往回）」<br><br>下面有一行小字：「條條道路通花圃。」`,
+        item: null
+      },
+      {
+        id: 'gd_fountain', label: '石造噴水池',
+        text: `你靠近看了看，池沿刻著一行字：「第三魔王軍第七後勤支援許願池，每逢朔望虔誠許願，願望當可成真。」<br><br>你往池底看了看，池底散落著各種動物的骨頭、幾顆獸牙、一把生鏽的小刀，還有一條看起來已經乾掉的蛇皮。<br><br>奧立維從池沿撿起一張被水打濕的信箋，展開來讀了一下。<br><br>「這是許願紙條。」他說，「上面寫著：『希望魅魔大人有朝一日可以魅惑我。』」<br><br>「這都是什麼亂七八糟的願望，」你不禁吐槽，轉身卻看見奧立維正在紙條上寫下自己的名字。<br><br>「呃……」奧立維默默地將信箋放回噴水池，「我只是想試試許願池的效果。」`,
+        item: null
+      },
+      {
+        id: 'gd_flower', label: '在黑暗中發光的花',
+        achId: 'ch3_flower',
+        text: `花圃裡有一株花在黑暗中發出淡藍色的微光。你走近看了看，它的葉片比一般的花更厚，花瓣的形狀很奇特。<br><br>你忍不住摘了一朵。`,
+        item: { tag: '道具', name: '迷途花（一朵）', desc: '在黑暗中發出淡藍色的光。不能取代火把，但至少讓你知道自己的手在哪裡。' }
+      }
+    ]
+  },
+  mirrorPool: {
+    id: 'mirrorPool', name: '水鏡池', hasInlineHotspots: true,
+    sceneText: `房間的中央有一片完全靜止的水池，水面平滑如鏡，清晰地倒映著頭頂的石頂——以及你們的身影。<br><br>石壁上立著一塊<span data-maze-hotspot="mp_tablet">石碑</span>，池邊緣刻著符文。你低頭看了看<span data-maze-hotspot="mp_surface">水面</span>，倒影清晰得有點不自在，池底隱約可以看見有<span data-maze-hotspot="mp_bottom">東西</span>沉在那裡。<br><br>整個房間安靜得像是連呼吸都不被允許。`,
+    exits: [
+      { dir: '返回', label: '藤蔓走廊', roomId: 'vineCorr' },
+      { dir: '向左', label: '遺忘走廊', roomId: 'fogCorr' },
+      { dir: '向右', label: '碎石走廊', roomId: 'boulderCorr' }
+    ],
+    hotspots: [
+      {
+        id: 'mp_tablet', label: '石碑',
+        text: `石碑上刻著幾行文字：<br><br>「水鏡池：本池水面可映照過去與未來。欲知前程，可凝視水面不少於一個時辰。」<br><br>下面補充：<br><br>「注意：本池映照功能自第十七任管理員離職後暫停維護，現僅提供一般倒影服務。如有疑問，請洽魔王軍第七後勤支援辦公室。」<br><br>最下面幾乎看不清楚的一行：「第七後勤支援辦公室已於三十二年前結束運作。」`,
+        item: null
+      },
+      {
+        id: 'mp_surface', label: '水面',
+        text: `你走近，低頭看著水面的倒影。靜止的水面上，你能清楚看見自己的臉——但倒影裡的你，正在看向你的右邊。<br><br>你有些驚慌地轉頭看了看，什麼都沒有。<br><br>當你轉回來重新看向水面時，你在水中的倒影就像正常的鏡像，彷彿一切都是你的幻覺。<br><br>奧立維湊過來，往水面看了一眼，隨即退後了一步。<br><br>「我看見我的倒影，」他顫抖地說，「在揮手。」<br><br>你們對視了一眼，迅速離開水池邊緣。`,
+        item: null
+      },
+      {
+        id: 'mp_bottom', label: '池底的東西',
+        deathTrap: true,
+        achId: 'ch3_pool',
+        text: `你蹲了下來，想看清楚沉在池底的東西——是一個小小的金屬盒子。<br><br>你伸手往水裡搆，但水比想像的深，你不斷壓低身體——<br><br>突然你感覺有什麼東西抓住了你的手腕。<br><br>☠ 你觸手被拖入水中，在失去意識之前，你只看見一雙巨大的、彷彿藏著無盡黑暗的雙眼死死盯著你。<br><br>等你再次睜開眼睛，你發現自己回到了入口廣場。`
+      }
+    ]
+  },
+  boulderCorr: {
+    id: 'boulderCorr', name: '碎石走廊',
+    sceneText: `走廊窄而長，牆壁上有輕微的龜裂痕跡，地上散落著碎石屑。你們小心翼翼地往前走，火把的光勉強照亮前方——<br><br>然後你們看見了一塊巨大的圓石。<br><br>它完美地堵死了走廊，圓石與走廊牆壁之間雖然有一點縫隙，但卻不足以讓你們鑽過。<br><br>奧立維繞著它查看，敲了敲側面，然後搖搖頭。<br><br>「完全推不動的，」他說，「除非有人力氣非常大。」`,
+    exits: [
+      { dir: '返回', label: '水鏡池', roomId: 'mirrorPool' }
+    ],
+    hotspots: [
+      {
+        id: 'bc_push', label: '閃開讓專業的來',
+        statCheck: {
+          stat: 'str', threshold: 4,
+          success: {
+            text: `你走上前，雙手撐在巨石表面，奧立維自覺地往旁邊退了兩步。<br><br>「你不是認真的——」<br><br>你深吸一口氣，發力一推，然後居然推動巨石了！<br><br>巨石發出一聲沉悶的轟鳴，緩緩向前滾動，在地面留下兩道深深的刮痕，最後咚地撞上前方的牆壁，露出了後面的通道。<br><br>奧立維目瞪口開地看著你。<br><br>你微微一笑，擺出一個自以為最帥氣的背影，瀟灑地走入通道。`,
+            achId: 'ch3_boulderPro',
+            moveToRoom: 'eyeAltar'
+          },
+          failure: {
+            text: `你走上前，雙手撐在巨石表面，擺出了你認為最專業的推石姿勢。<br><br>奧立維往旁邊退了兩步，表情複雜。<br><br>你深吸一口氣，開始用力。<br><br>巨石絲紋未動。<br><br>但你聽見了一聲輕響——像是某個卡榫鬆開了。<br><br>你和奧立維同時低頭看向巨石底部，發現它下方有一條凹槽，嵌進了地面。<br><br>「等一下，」奧立維說，「這不是擋路的石頭，這是——」<br><br>話還沒說完，你感覺到手中的巨石動了。<br><br>只是它是朝著你們的方向移動。<br><br>☠ 你們躲閃不及。<br><br>等你再次睜開眼睛，你發現自己回到了入口廣場。`,
+            achId: 'ch3_boulderDeath',
+            deathTrap: true
+          }
+        }
+      }
+    ]
+  },
+  fogCorr: {
+    id: 'fogCorr', name: '遺忘走廊', hasInlineHotspots: true,
+    sceneText: `走廊比想像中長，牆上原本應該刻著壁畫或文字，但表面已經斑駁得幾乎看不出內容，只留下深淺不一的痕跡——很像是被人刻意抹去。<br><br>走廊的角落有一個看起來像是補給站的地方，物品散落在四處，其中幾件小東西引起你的注意。<br><br>你注意到<span data-maze-hotspot="fc_knife">小刀</span>、<span data-maze-hotspot="fc_lantern">提燈</span>和一本<span data-maze-hotspot="fc_notebook">筆記本</span>，它們和周圍的物品相比，異常的乾淨，沒有沾染灰塵，像是不久前才被人放在這裡，或者剛剛被人翻動過。<br><br>走了一段路後，前方分成三個方向。左側通道飄來一陣風，帶著淡淡的燒焦氣味；正前方的通道比較寬，地面上隱約還能看出拖痕；右側的地面石板明顯更新一些，刻著模糊的符文，朝某個方向延伸。<br><br>奧立維看著三條路，嘆了口氣。<br><br>「我們不會剛好每一條都要走過一遍吧。」`,
+    forgetItems: ['fc_knife', 'fc_lantern', 'fc_notebook'],
+    forgetAchId: 'ch3_neverForget',
+    exits: [
+      { dir: '返回', label: '水鏡池', roomId: 'mirrorPool' },
+      { dir: '左側', label: '遺棄營地', roomId: 'abandonedCamp' },
+      { dir: '正前方', label: '鏡子廳', roomId: 'mirrorHall' },
+      { dir: '右側', label: '中央廣場', roomId: 'centralPlaza' }
+    ],
+    hotspots: [
+      {
+        id: 'fc_knife', label: '小刀',
+        text: `你注意到地上有一把小刀，刀身雖然有些鏽斑，但刀柄擦得很乾淨，完全沒有灰塵，上面刻著一個陌生的名字。<br><br>你不確定這樣的小刀能否派上用場，但最後你還是把它收進了背包。`,
+        item: { tag:'道具', name:'刻著陌生名字的小刀', desc:'刀柄被擦得很乾淨，不知道原本的主人後來怎麼樣了。' }
+      },
+      {
+        id: 'fc_lantern', label: '提燈',
+        text: `你撿起了提燈，心想如果能代替火把就太好了。<br><br>你注意到提燈的底部有些鬆脫，當你檢查提燈時，發現底部藏著一個暗格。<br><br>你在暗格裡找到一份小心摺疊起來的文件，紙張邊緣銳利，完全沒有受潮或泛黃的痕跡，看起來像是不久前才被放在這裡的。<br><br>你打開來看，上面是用某種密語寫成的，但有一段被翻譯成通用語：<br><br>「……王城遠征軍已確定出發，路線與人數已如前述回報。建議於山道設置魔法迷宮，務必延緩其進度，爭取整備時間。內應將持續回報後續動向。」<br><br>你心裡一沉——這份文件意味著，魔王軍早就知道遠征軍要來了，而且消息來源，就在王城內部。`,
+        item: { tag:'線索', name:'魔王軍密報殘頁', desc:'內容顯示魔王軍事先得知遠征軍的行動，王城內部似乎有內應。' }
+      },
+      {
+        id: 'fc_notebook', label: '筆記本',
+        text: `你看到地上有一本攤開的筆記本，上面寫著像是巡邏紀錄或檢查清單：<br><br>「今日巡視：<br>－ 西側通道符文：正常<br>－ 鏡廳幻象：正常（已修復閃爍問題）<br>－ 假祭壇陷阱：正常<br>－ 深坑：正常<br>－ 水鏡池水位：略低，已回報」<br><br>最後一行字跡比較潦草：「話說這份工作到底要做到什麼時候，魔王軍的福利也太差了。」`,
+        item: { tag:'道具', name:'忘記帶走的巡邏筆記', desc:'記錄著迷宮各處的維護狀態，最後一行是抱怨待遇太差的牢騷。' }
+      }
+    ]
+  },
+  abandonedCamp: {
+    id: 'abandonedCamp', name: '遺棄營地', hasInlineHotspots: true,
+    sceneText: `走廊盡頭是一片稍微開闊的空間，地上散落著幾個<span data-maze-hotspot="ac_tent">帳篷殘骸</span>，帳布大半已經破損，露出底下生鏽的支架。<br><br>中央有一個簡陋的<span data-maze-hotspot="ac_ash">營火堆</span>，灰燼早已冷卻，但空氣裡那股燒焦的氣味，似乎就是從這裡飄出來的——只是奇怪的是，這股氣味聞起來比眼前的灰燼新鮮得多。<br><br>帳篷之間散落著一些補給品的空殼：碗、繩索、一頂破損的頭盔，還有一個被翻得亂七八糟的<span data-maze-hotspot="ac_report">行李袋</span>。<br><br>奧立維蹲下來看了看灰燼，又抬頭看了看四周。<br><br>「他們看起來走得很倉促，」他說，「沒有人會把帳篷留在原地直接跑路，除非……」<br><br>他沒有把話說完。<br><br>營地的另一側，原本的通道似乎還繼續延伸下去，只是地面凹凸不平，黑暗中看不清前方的狀況。`,
+    exits: [
+      { dir: '返回', label: '遺忘走廊', roomId: 'fogCorr' },
+      { dir: '繼續深入', label: '深坑', roomId: 'deepPit' }
+    ],
+    hotspots: [
+      {
+        id: 'ac_tent', label: '帳篷殘骸',
+        text: `你走近其中一個還算完整的帳篷，掀開破損的帳布往裡看。<br><br>裡面只剩一張倒塌的行軍床，床腳下壓著一本攤開的日記，似乎是匆忙逃跑時來不及帶走的。<br><br>日記前幾頁記錄著每天的行程與心情，字跡越往後越潦草。最後一頁只寫了一句話：<br><br>「今天輪到我去查看深處的通道。如果我沒有回來，請替我向我的家人告別。」<br><br>下面沒有署名，也沒有人知道，他到底有沒有回來。`,
+        item: { tag:'道具', name:'帳篷裡的日記', desc:'最後一頁寫著要去查看深處的通道，後面再也沒有續寫。' }
+      },
+      {
+        id: 'ac_ash', label: '營火堆',
+        text: `你蹲下來看了看灰燼，用手指戳了戳——還殘留著一點微弱的溫度。<br><br>灰燼底下壓著一張被燒焦了一角的清單，邊緣捲曲發黑，但還能看出大致內容：<br><br>「本月巡邏路線檢查表：<br>－ 遺棄營地：已巡視，確認無生還者<br>－ 深坑：已巡視，陷阱機關正常<br>－ ……」<br><br>清單下半部分被燒得讀不出來，但你已經猜到——這堆灰燼，八成不是探險隊留下的。`,
+        item: { tag:'線索', name:'燒焦的巡邏清單殘頁', desc:'證實營火並非探險隊留下，魔王軍似乎仍定期巡視這座營地。' }
+      },
+      {
+        id: 'ac_report', label: '行李袋',
+        text: `你蹲下來翻找那個被翻得亂七八糟的行李袋，在最底層找到一份被壓皺的報告，紙頁邊緣有些泛黑，像是被雨水浸過又乾掉。<br><br>報告開頭寫著「迷宮探勘紀錄：第三批」，下面是簡略的路線標記和日期，記錄著走過的路段、遇到的陷阱，還有隨著日期遞減的隊伍人數——一開始六個名字，到最後只剩下兩個沒被劃掉。<br><br>最後一段字跡潦草，顯然寫得很倉促：<br><br>「不知道為什麼，魔王軍總是能搶先我們一步。每次我們才剛確定一條新路線，沒過幾天，那條路線就被重新設了陷阱，或是整段封死。<br><br>感覺像是……他們早就知道我們要往哪裡走。<br><br>但這不可能。我們沒有留下任何記號，也沒有人離隊。除非——」<br><br>報告在這裡斷了，後面的紙頁不知去向。`,
+        item: { tag:'線索', name:'斥候的探勘紀錄', desc:'記錄著前幾批探勘隊的路線與遭遇，最後一段寫到魔王軍似乎總能預知他們的行動。' }
+      }
+    ]
+  },
+  mirrorHall:    { id: 'mirrorHall',    name: '鏡子廳',    _wip: true, exits: [{ dir: '返回', label: '遺忘走廊', roomId: 'fogCorr' }], hotspots: [] },
+  sealedChamber: { id: 'sealedChamber', name: '封印密室',  _wip: true, exits: [{ dir: '返回', label: '鏡子廳', roomId: 'mirrorHall' }], hotspots: [] },
+  centralPlaza:  { id: 'centralPlaza',  name: '中央廣場',  _wip: true, exits: [{ dir: '返回', label: '遺忘走廊', roomId: 'fogCorr' }], hotspots: [] },
+  fakeAltar:     { id: 'fakeAltar',     name: '假祭壇',    isDeath: true, deathText: '你伸手觸碰了祭壇上的物件。一股強烈的衝擊讓你昏迷。等你再次睜開眼睛，你發現自己回到了入口廣場。', exits: [], hotspots: [] },
+  deepPit:       { id: 'deepPit',       name: '深坑',      isDeath: true, deathAch: 'ch3_pitfall', deathAchRepeat: 'ch3_pitfallAgain', deathText: '你一腳踩空，掉入深不見底的陷阱。<br><br>☠ 你墜入黑暗之中。<br><br>等你再次睜開眼睛，你發現自己回到了入口廣場。', exits: [], hotspots: [] },
+  eyeAltar:      { id: 'eyeAltar',      name: '陣眼祭壇',  isExit: true, sceneText: '（出口內容設計中）', exits: [{ dir: '返回', label: '中央廣場', roomId: 'centralPlaza' }], hotspots: [] }
+};
+
+function startMaze() {
+  state.progress.ch3.maze = {
+    room: 'entrance', actions: 0,
+    visited: ['entrance'], hotspots: [], items: [], result: null
+  };
+  saveState();
+  renderMaze();
+}
+
+function collapseHallAction(actionId) {
+  const maze = state.progress.ch3.maze;
+  const cha  = (state.char.stats && state.char.stats.cha) || 0;
+
+  function grantAch(achId) {
+    if (!state.achievements.includes(achId)) {
+      state.achievements.push(achId);
+      renderAchievements();
+    }
+  }
+
+  maze.actions += 1;
+
+  if (actionId === 'ch_retreat') {
+    maze.room = 'entrance';
+    maze.result = { type: 'hotspot', text: `你往後退了一步，用最平靜的語氣說：「對不起，走錯房間了，我先告辭。」<br><br>鎧甲緩緩轉過頭，空洞的眼縫對著你，沉默了大概三秒鐘。<br><br>你也沉默了三秒鐘。<br><br>然後，就在你準備以最快速度逃離的前一刻，鎧甲……轉回去了。<br><br>好像真的相信了。<br><br>你以極其優雅的步伐退出大廳，把門帶上，深吸一口氣。` };
+    saveState(); renderMaze(); return;
+  }
+
+  if (actionId === 'ch_left') {
+    grantAch('ch3_rashPerson');
+    maze.result = { type: 'death', achId: 'ch3_rashPerson', text: `你看了看鎧甲，又看了看左邊走廊透進來的光。<br><br>這可是一副重甲，而且才剛睡醒的樣子，速度應該不會很快。<br><br>你沒有再遲疑，深吸一口氣，起跑。<br><br>才跑沒兩步，你眼前一黑。<br><br>在失去意識之前，你想起了一句很帥氣的台詞：女人，只會影響我拔刀的速度。<br><br>這副鎧甲肯定……<br><br>☠ 你被鎧甲一劍斬殺。` };
+    saveState(); renderMaze(); return;
+  }
+
+  if (actionId === 'ch_right') {
+    grantAch('ch3_rashPerson');
+    maze.result = { type: 'death', achId: 'ch3_rashPerson', text: `你看了看鎧甲，又看了看右邊走廊的黑暗。<br><br>這可是一副重甲，而且才剛睡醒的樣子，速度應該不會很快。<br><br>你沒有再遲疑，深吸一口氣，起跑。<br><br>才跑沒兩步，你眼前一黑。<br><br>在失去意識之前，你想起了一句很帥氣的台詞：女人，只會影響我拔刀的速度。<br><br>這副鎧甲肯定……<br><br>☠ 你被鎧甲一劍斬殺。` };
+    saveState(); renderMaze(); return;
+  }
+
+  if (actionId === 'ch_charge') {
+    grantAch('ch3_eggStrike');
+    maze.result = { type: 'death', achId: 'ch3_eggStrike', text: `反正遲早要正面交鋒，不如搶先一步。<br><br>你大喝一聲，衝向鎧甲——<br><br>——然後在衝出去的那一刻，你想起了一件事。<br><br>你沒有武器。<br><br>然後，就沒有然後了。<br><br>這就是你的最後一個念頭。<br><br>☠ 戰術上可行，只是執行上有一點問題，你被鎧甲一劍斬殺了。` };
+    saveState(); renderMaze(); return;
+  }
+
+  if (actionId === 'ch_talk') {
+    if (cha >= 4) {
+      grantAch('ch3_truce');
+      maze.hotspots.push('ch_cleared');
+      maze.result = { type: 'cloak_success', achId: 'ch3_truce', text: `你往前走了一步，開口：「你一個人在這裡，會不會很寂寞？」<br><br>鎧甲沒有回應。<br><br>「這個迷宮，」你繼續說，聲音放輕了，「應該很久沒有人來了。你一直守在這裡，守著一個沒有光、沒有聲音的大廳。」<br><br>沉默。<br><br>「偶爾有人闖進來，」你說，「但他們只是專注在自己的事情，沒有人留下來，也沒有人問過你——你在這裡，還好嗎。」<br><br>鎧甲按著劍的手顫動了一下。<br><br>「你一個人在這裡，」你說，「一定很辛苦。」<br><br>說完，大廳靜得嚇人。<br><br>然後，鎧甲的肩膀開始劇烈抖動。但你們知道它並不是要攻擊你們。<br><br>它發出一個低沉的、說不清楚是什麼的聲音，然後倉皇地側開了身，背對著你們，鎧甲顫抖著，金屬碰撞的聲音聽起來像是哭泣的嗚咽聲。<br><br>奧立維靠近你，壓低聲音說：「它是不是在哭？」<br><br>你只是催促著奧立維趕快離開。<br><br>你們悄悄從它身旁繞過去，不敢再打擾它。離開大廳之前，你回頭看了一眼——它還是背對著你們。<br><br>奧立維說：「總覺得我們做了一件很殘忍的事。」` };
+    } else {
+      grantAch('ch3_thorn');
+      maze.result = { type: 'death', achId: 'ch3_thorn', text: `「喂，」你往前走了一步，「你一個人嗎？會不會……」<br><br>回應你的是一聲劍鳴與閃光。<br><br>你的世界從此陷入黑暗。<br><br>☠ 它不太擅長聊天，猶如帶刺的玫瑰，一劍將你刺死。` };
+    }
+    saveState(); renderMaze(); return;
+  }
+
+  if (actionId === 'ch_cloak') {
+    grantAch('ch3_vanish');
+    maze.hotspots.push('ch_cleared');
+    maze.result = { type: 'cloak_success', achId: 'ch3_vanish', text: `你從背包裡拿出斗篷，深吸一口氣，然後大喊：<br><br>「<strong>憑空消失術！</strong>」<br><br>你迅速將隱形斗篷往自己和奧立維身上一蓋。<br><br>但斗篷明顯不是設計給兩個人用，你們兩個的雙腳還有部分身體，還是露在斗篷外。<br><br>「你的手肘頂到我了，」奧立維壓著聲音說。<br><br>「不要吵，」你說，「壓低身體。」<br><br>「但我看不到路。」<br><br>「不要說話！」<br><br>你們嗑嗑絆絆地往前挪動，借助大廳裡遍地的巨石遮掩身形，每移動一步就要停下來確認位置。<br><br>鎧甲在大廳裡瘋狂地尋找你們，一邊揮舞著雙手劍到處亂砍。<br><br>突然，它一劍落在你們右側的石塊上，碎石飛了過來。<br><br>奧立維忍不住驚呼了一聲。<br><br>你們同時停住腳步，連呼吸都屏住了。<br><br>鎧甲的頭部轉向你們這側，雖然你看不見它面罩之下的眼睛，但你有一種就要被它看穿的恐懼感。<br><br>它凝視了許久，終於往其他地方去尋找你們。<br><br>你用最輕的聲音說：「走。」<br><br>你們貼著石壁一路挪到大廳另一側，都沒有回頭，也沒有說話，一直到走廊將鎧甲的身影擋在視線之外，才敢站直身體。<br><br>奧立維從斗篷裡鑽出頭，喘了口氣：「憑空消失術？」<br><br>你沒有理會他的吐槽，繼續往前走。` };
+    saveState(); renderMaze(); return;
+  }
+}
+
+function renderMaze() {
+  const p    = state.progress.ch3;
+  const maze = p.maze;
+  if (!maze) { startMaze(); return; }
+
+  const sc         = document.getElementById('storyContent');
+  const torchTotal = p.torches || 5;
+  const actLeft    = torchTotal * MAZE_TORCH_SIZE - maze.actions;
+  const room       = MAZE_ROOMS[maze.room];
+
+  if (maze.result) { renderMazeResult(maze.result); return; }
+
+  if (actLeft <= 0) {
+    state.progress.ch3.maze.result = { type:'failure', cause:'torch',
+      text:'最後一根火把在黑暗中無聲地熄滅了。你停在原地，四周完全看不見任何東西。<br><br>片刻後，你摸索著原路走回入口。' };
+    saveState(); renderMazeResult(state.progress.ch3.maze.result); return;
+  }
+
+  if (room && room.isDeath) {
+    let deathAchShown = null;
+    if (room.deathAch) {
+      if (!state.achievements.includes(room.deathAch)) {
+        state.achievements.push(room.deathAch);
+        renderAchievements();
+        deathAchShown = room.deathAch;
+      } else if (room.deathAchRepeat && !state.achievements.includes(room.deathAchRepeat)) {
+        state.achievements.push(room.deathAchRepeat);
+        renderAchievements();
+        deathAchShown = room.deathAchRepeat;
+      }
+    }
+    state.progress.ch3.maze.result = { type:'death', text: room.deathText, achId: deathAchShown };
+    saveState(); renderMazeResult(state.progress.ch3.maze.result); return;
+  }
+
+  if (!room) { sc.innerHTML = `<div class="story-body"><div class="story-text">（房間資料缺失：${maze.room}）</div></div>`; return; }
+
+  const torchTxt = getMazeTorchText(maze.actions, torchTotal);
+  const hotspots = room.hotspots || [];
+  const exits    = room.exits    || [];
+
+  let html = `<div class="story-body">
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(154,123,47,0.12);border:1px solid var(--parchment-deep);border-radius:6px;padding:10px 14px;margin-bottom:18px">
+      <span style="font-size:15px">🔥</span>
+      <span style="font-size:13px;color:var(--ink-faded);letter-spacing:0.04em">${torchTxt}</span>
     </div>
-    ${locked ? `<span class="book-badge" style="background:rgba(90,62,43,0.1);color:var(--ink-light);border:1px solid var(--parchment-deep);font-size:9px;padding:2px 6px">🔒 ${reqLabel ? '未達門檻' : '條件未達'}</span>` : ''}`;
-  if (!locked) btn.onclick = onclickFn;
-  return btn;
+    <div class="section-title" style="margin-bottom:16px">✦ ${room.name}</div>`;
+
+  if (room._wip) {
+    html += `<div class="story-text" style="margin-bottom:20px;color:var(--ink-light);font-style:italic">（此房間的場景內容設計中）</div>`;
+  } else {
+    html += `<div class="story-text" style="margin-bottom:20px">${room.sceneText}</div>`;
+  }
+
+  html += `<div class="ornament">— ✦ —</div>`;
+  if (room.hasActions) {
+    const cleared = maze.hotspots.includes('ch_cleared');
+    if (!cleared) {
+      html += `<div style="display:flex;flex-direction:column;gap:8px" id="mazeActions"></div>`;
+    } else {
+      html += `<p style="font-size:13px;color:var(--ink-light);margin:16px 0 10px;letter-spacing:0.05em">移動到其他房間</p><div style="display:flex;flex-direction:column;gap:8px" id="mazeExits"></div>`;
+    }
+  } else {
+    if (hotspots.length > 0 && !room.hasInlineHotspots) html += `<p style="font-size:13px;color:var(--ink-light);margin:14px 0 10px;letter-spacing:0.05em">是否調查以下物品：</p><div style="display:flex;flex-direction:column;gap:8px" id="mazeHotspots"></div>`;
+    if (exits.length   > 0) html += `<p style="font-size:13px;color:var(--ink-light);margin:16px 0 10px;letter-spacing:0.05em">移動到其他房間</p><div style="display:flex;flex-direction:column;gap:8px" id="mazeExits"></div>`;
+  }
+  html += `</div>`;
+  sc.innerHTML = html;
+
+  // ── hasActions 房間（坍塌大廳型）────────────────────────────────────────────
+  if (room.hasActions) {
+    const cleared = maze.hotspots.includes('ch_cleared');
+    if (!cleared) {
+      (room.actions || []).forEach(action => {
+        if (action.requiresItem && !maze.items.includes(action.requiresItem)) return;
+        const btn = document.createElement('div');
+        btn.className = 'book-item';
+        btn.style.cursor = 'pointer';
+        btn.innerHTML = `<div class="book-info"><div class="book-title" style="font-size:14px">${action.label}</div></div>`;
+        btn.onclick = () => collapseHallAction(action.id);
+        document.getElementById('mazeActions')?.appendChild(btn);
+      });
+    } else {
+      (room.clearedExits || []).forEach(exit => {
+        const visited = maze.visited.includes(exit.roomId);
+        const btn = document.createElement('div');
+        btn.className = 'book-item';
+        btn.style.cursor = 'pointer';
+        const baseDir  = exit.dir === '返回' ? '回到上一個房間' : exit.dir;
+        const dirLabel = visited ? `${baseDir}（已探索，${exit.label}）` : baseDir;
+        btn.innerHTML = `<div class="book-info"><div class="book-title" style="font-size:14px">${dirLabel}</div></div>`;
+        btn.onclick = () => {
+          state.progress.ch3.maze.actions += 1;
+          if (!state.progress.ch3.maze.visited.includes(exit.roomId)) state.progress.ch3.maze.visited.push(exit.roomId);
+          state.progress.ch3.maze.room = exit.roomId;
+          saveState(); renderMaze();
+        };
+        document.getElementById('mazeExits')?.appendChild(btn);
+      });
+    }
+    return;
+  }
+
+  // ── 處理文字內嵌熱點 ──────────────────────────────────────────────────────
+  if (room.hasInlineHotspots) {
+    document.querySelectorAll('[data-maze-hotspot]').forEach(el => {
+      const id   = el.dataset.mazeHotspot;
+      const done = maze.hotspots.includes(id);
+      const hs   = hotspots.find(h => h.id === id);
+      if (done) {
+        el.style.cssText = 'font-weight:bold;color:var(--ink-light);text-decoration:line-through;cursor:default';
+      } else {
+        el.style.cssText = 'font-weight:bold;color:var(--gold-light);text-decoration:underline;cursor:pointer';
+        if (hs) el.onclick = () => {
+          state.progress.ch3.maze.actions += 1;
+          state.progress.ch3.maze.hotspots.push(id);
+          if (hs.statCheck) {
+            const passed = (state.char.stats[hs.statCheck.stat] || 0) >= hs.statCheck.threshold;
+            const branch = passed ? hs.statCheck.success : hs.statCheck.failure;
+            if (branch.item) { state.progress.ch3.maze.items.push(id); addItem({ tag:branch.item.tag, name:branch.item.name, desc:branch.item.desc }); }
+            if (branch.achId && !state.achievements.includes(branch.achId)) {
+              state.achievements.push(branch.achId);
+              renderAchievements();
+            }
+            if (branch.deathTrap) {
+              state.progress.ch3.maze.result = { type:'death', text:branch.text, achId: branch.achId || null };
+            } else if (branch.moveToRoom) {
+              const destName = MAZE_ROOMS[branch.moveToRoom]?.name || branch.moveToRoom;
+              state.progress.ch3.maze.result = { type:'stat_move', text:branch.text, achId: branch.achId || null, destRoom: branch.moveToRoom, destLabel: destName };
+            } else {
+              state.progress.ch3.maze.result = { type:'hotspot', text:branch.text, item:branch.item||null, achId: branch.achId||null };
+            }
+          } else if (hs.deathTrap) {
+            if (hs.achId && !state.achievements.includes(hs.achId)) {
+              state.achievements.push(hs.achId);
+              renderAchievements();
+            }
+            state.progress.ch3.maze.result = { type:'death', text:hs.text, achId: hs.achId || null };
+          } else {
+            if (hs.item) { state.progress.ch3.maze.items.push(id); addItem({ tag:hs.item.tag, name:hs.item.name, desc:hs.item.desc }); }
+            if (hs.achId && !state.achievements.includes(hs.achId)) { state.achievements.push(hs.achId); renderAchievements(); }
+            state.progress.ch3.maze.result = { type:'hotspot', text:hs.text, item:hs.item||null, achId: hs.achId||null };
+          }
+          saveState(); renderMaze();
+        };
+      }
+    });
+  }
+
+  hotspots.forEach(hs => {
+    const done = maze.hotspots.includes(hs.id);
+    const btn  = document.createElement('div');
+    btn.className = 'book-item' + (done ? ' read' : '');
+    btn.style.cursor = done ? 'default' : 'pointer';
+    btn.innerHTML = `<div class="book-info">
+      <div class="book-title" style="font-size:14px">${hs.label}</div>
+      ${done ? '<div class="book-hint" style="font-size:12px;color:var(--ink-light)">已互動</div>' : ''}
+    </div>${done ? '<span class="book-badge" style="font-size:10px;background:rgba(90,62,43,0.1);color:var(--ink-light);border:1px solid var(--parchment-deep)">✓</span>' : ''}`;
+    if (!done) btn.onclick = () => {
+      state.progress.ch3.maze.actions += 1;
+      state.progress.ch3.maze.hotspots.push(hs.id);
+      if (hs.statCheck) {
+        const passed = (state.char.stats[hs.statCheck.stat] || 0) >= hs.statCheck.threshold;
+        const branch = passed ? hs.statCheck.success : hs.statCheck.failure;
+        if (branch.item) { state.progress.ch3.maze.items.push(hs.id); addItem({ tag:branch.item.tag, name:branch.item.name, desc:branch.item.desc }); }
+        if (branch.achId && !state.achievements.includes(branch.achId)) {
+          state.achievements.push(branch.achId);
+          renderAchievements();
+        }
+        if (branch.deathTrap) {
+          state.progress.ch3.maze.result = { type:'death', text:branch.text, achId: branch.achId || null };
+        } else if (branch.moveToRoom) {
+          const destName = MAZE_ROOMS[branch.moveToRoom]?.name || branch.moveToRoom;
+          state.progress.ch3.maze.result = { type:'stat_move', text:branch.text, achId: branch.achId || null, destRoom: branch.moveToRoom, destLabel: destName };
+        } else {
+          state.progress.ch3.maze.result = { type:'hotspot', text:branch.text, item:branch.item||null, achId: branch.achId||null };
+        }
+      } else if (hs.deathTrap) {
+        if (hs.achId && !state.achievements.includes(hs.achId)) {
+          state.achievements.push(hs.achId);
+          renderAchievements();
+        }
+        state.progress.ch3.maze.result = { type:'death', text:hs.text, achId: hs.achId || null };
+      } else {
+        if (hs.item) { state.progress.ch3.maze.items.push(hs.id); addItem({ tag:hs.item.tag, name:hs.item.name, desc:hs.item.desc }); }
+        if (hs.achId && !state.achievements.includes(hs.achId)) { state.achievements.push(hs.achId); renderAchievements(); }
+        state.progress.ch3.maze.result = { type:'hotspot', text:hs.text, item:hs.item||null, achId: hs.achId||null };
+      }
+      saveState(); renderMaze();
+    };
+    document.getElementById('mazeHotspots')?.appendChild(btn);
+  });
+
+  exits.forEach(exit => {
+    const visited = maze.visited.includes(exit.roomId);
+    const btn     = document.createElement('div');
+    btn.className = 'book-item';
+    btn.style.cursor = 'pointer';
+    const baseDir  = exit.dir === '返回' ? '回到上一個房間' : exit.dir;
+    const dirLabel = visited ? `${baseDir}（已探索，${exit.label}）` : baseDir;
+    btn.innerHTML = `<div class="book-info">
+      <div class="book-title" style="font-size:14px">${dirLabel}</div>
+    </div>`;
+    btn.onclick = () => {
+      if (room && room.forgetItems && !maze.hotspots.includes(room.id + '_forgetDone')) {
+        const pickedIds = room.forgetItems.filter(id => maze.hotspots.includes(id));
+        if (pickedIds.length > 0) {
+          maze.hotspots.push(room.id + '_forgetDone');
+          const passed = (state.char.stats.wis || 0) >= 4;
+          if (passed) {
+            if (room.forgetAchId && !state.achievements.includes(room.forgetAchId)) {
+              state.achievements.push(room.forgetAchId);
+              renderAchievements();
+            }
+            saveState();
+            mazeShowAchPopup(room.forgetAchId, 'move', exit.roomId);
+          } else {
+            const pickedNames = pickedIds
+              .map(id => (room.hotspots.find(h => h.id === id) || {}).item)
+              .filter(Boolean)
+              .map(it => it.name);
+            state.char.items = (state.char.items || []).filter(it => !pickedNames.includes(it.name));
+            renderItems();
+            saveState();
+            showMazeForgetPopup(exit.roomId);
+          }
+          return;
+        }
+      }
+      state.progress.ch3.maze.actions += 1;
+      if (!state.progress.ch3.maze.visited.includes(exit.roomId)) state.progress.ch3.maze.visited.push(exit.roomId);
+      state.progress.ch3.maze.room = exit.roomId;
+      saveState(); renderMaze();
+    };
+    document.getElementById('mazeExits')?.appendChild(btn);
+  });
+}
+
+function showMazeForgetPopup(roomId) {
+  const popup = document.getElementById('bonusPopup');
+  document.getElementById('bonusPopupIcon').textContent = '💭';
+  document.getElementById('bonusPopupTitle').textContent = '遺忘走廊';
+  document.getElementById('bonusPopupText').innerHTML = `你們走出走廊後，忽然想不起來剛才順手拿了什麼東西。`;
+  popup.dataset.complete = '';
+  popup.dataset.action = `maze_move_${roomId}`;
+  popup.classList.add('open');
+}
+
+function renderMazeResult(result) {
+  const p    = state.progress.ch3;
+  const sc   = document.getElementById('storyContent');
+  const txt  = getMazeTorchText(p.maze.actions, p.torches || 5);
+
+  let html = `<div class="story-body">
+    <div style="display:flex;align-items:center;gap:8px;background:rgba(154,123,47,0.12);border:1px solid var(--parchment-deep);border-radius:6px;padding:10px 14px;margin-bottom:18px">
+      <span style="font-size:15px">🔥</span>
+      <span style="font-size:13px;color:var(--ink-faded);letter-spacing:0.04em">${txt}</span>
+    </div>
+    <div class="story-text" style="margin-bottom:20px">${result.text}</div>`;
+
+  if (result.item) {
+    html += `<div class="ornament">— ✦ —</div>
+    <p style="font-size:12px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 4px">✦ 獲得道具｜${escapeHtml(result.item.tag)}：${escapeHtml(result.item.name)}</p>
+    <p style="font-size:13px;color:var(--ink-light);margin-bottom:16px">${escapeHtml(result.item.desc)}</p>`;
+  }
+
+  html += `<div class="ornament">— ✦ —</div>`;
+
+  if (result.type === 'stat_move') {
+    html += `<div style="text-align:center;margin-top:18px">`;
+    const moveCall = result.achId
+      ? `mazeShowAchPopup('${result.achId}','move','${result.destRoom}')`
+      : `mazeMove('${result.destRoom}')`;
+    html += `<button class="btn btn-gold" onclick="${moveCall}">前往${result.destLabel}</button>`;
+    html += `</div>`;
+  } else if (result.type === 'cloak_success') {
+    const room  = MAZE_ROOMS[state.progress.ch3.maze.room];
+    const exits = (room && room.clearedExits) ? room.clearedExits : [];
+    html += `<p style="font-size:14px;color:var(--ink);letter-spacing:0.05em;margin:18px 0 12px;text-align:center">你躲過了鎧甲的追殺。<br>現在你要怎麼移動？</p>`;
+    html += `<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">`;
+    exits.forEach(exit => {
+      const visited = state.progress.ch3.maze.visited.includes(exit.roomId);
+      const label   = visited ? `${exit.dir}（已探索，${exit.label}）` : `${exit.dir}　${exit.label}`;
+      const moveCall = result.achId
+        ? `mazeShowAchPopup('${result.achId}','move','${exit.roomId}')`
+        : `mazeMove('${exit.roomId}')`;
+      html += `<div class="book-item" style="cursor:pointer" onclick="${moveCall}">
+        <div class="book-info"><div class="book-title" style="font-size:14px">${label}</div></div>
+      </div>`;
+    });
+    html += `</div>`;
+  } else {
+    html += `<div style="text-align:center;margin-top:18px">`;
+    if (result.type === 'failure' || result.type === 'death') {
+      const restartCall = result.achId
+        ? `mazeShowAchPopup('${result.achId}','restart')`
+        : `mazeRestart()`;
+      html += `<button class="btn btn-gold" onclick="${restartCall}">重新開始探索</button>`;
+    } else {
+      const continueCall = result.achId
+        ? `mazeShowAchPopup('${result.achId}','continue')`
+        : `mazeContinue()`;
+      html += `<button class="btn btn-gold" onclick="${continueCall}">繼續</button>`;
+    }
+    html += `</div>`;
+  }
+
+  html += `</div>`;
+  sc.innerHTML = html;
+}
+
+function mazeContinue() {
+  state.progress.ch3.maze.result = null;
+  saveState(); renderMaze();
+}
+
+function mazeMove(roomId) {
+  const maze = state.progress.ch3.maze;
+  maze.result = null;
+  maze.actions += 1;
+  if (!maze.visited.includes(roomId)) maze.visited.push(roomId);
+  maze.room = roomId;
+  saveState(); renderMaze();
+}
+
+function mazeRestart() {
+  const maze = state.progress.ch3.maze;
+  if (!maze) return;
+  maze.room    = 'entrance';
+  maze.actions = 0;
+  maze.result  = null;
+  saveState(); renderMaze();
+}
+
+function mazeShowAchPopup(achId, nextAction, roomId) {
+  const achDef = CH3_MAZE_ACHIEVEMENTS.find(a => a.id === achId);
+  const name = achDef ? achDef.name : achId;
+  const popup = document.getElementById('bonusPopup');
+  document.getElementById('bonusPopupIcon').textContent = '🏆';
+  document.getElementById('bonusPopupTitle').textContent = '獲得成就';
+  document.getElementById('bonusPopupText').innerHTML = `「${name}」`;
+  popup.dataset.complete = '';
+  popup.dataset.action = roomId ? `maze_move_${roomId}` : `maze_${nextAction}`;
+  popup.classList.add('open');
 }
 
 function renderChapter3() {
-  if (!state.progress.ch3)
-    state.progress.ch3 = { phase1:null, phase1_good:false, side:null, phase2:null, phase2_good:false, phase3:null, phase3_good:false, done:false };
-  const p     = state.progress.ch3;
-  const sc    = document.getElementById('storyContent');
-  const stats = state.char.stats || {};
+  if (!state.progress.ch3 || state.progress.ch3.olivia === undefined) {
+    state.progress.ch3 = { olivia: null, torches: 5, maze: null, done: false };
+  }
+  const p  = state.progress.ch3;
+  const sc = document.getElementById('storyContent');
 
-  // ── helper: render a completed phase as a read-only record ───────────────
-  function doneSection(sectionTitle, introText, optLabel, story, items) {
-    return `
+  let html = `<div class="story-body"><div class="story-text">${STORY_CH3}</div></div>`;
+
+  if (p.olivia !== null) {
+    const oliviaLabel = p.olivia ? '接受他的幫助' : '拒絕他的好意';
+    const oliviaStory = p.olivia
+      ? `你點了點頭，說：「好，那就一起去。」<br><br>奧立維背起了補給包，和你一起往山道的迷宮入口走去。<br><br>你帶著六根火把，走進了迷宮。`
+      : `你搖了搖頭，說：「太危險了，你留在外面吧。」<br><br>奧立維愣了一下，儘管不情願，但他還是點了點頭，退開了兩步。<br><br>你走向入口，一腳踏進石拱門，身後傳來低沉的轟鳴——入口的機關啟動了，大門正在緩緩關閉。<br><br>就大門完全閉合的前一秒，你看見一道身影從即將閉合的門縫間鑽了進來，是奧立維！<br><br>石門在他身後轟地合上，他喘著氣說：「打仗這種事，輪……輪不到我們後勤，所以肯定不會有危險的，如果有，就讓我們一起面對。」<br><br>說完，他向你露出了招牌的微笑。<br><br>你覺得感動又無言，但又覺得向他道謝有點矯情，於是對他說：「你的背包呢？」<br><br>他搔了搔頭表示剛才眼看著大門就要關上，只好放棄背包才勉強擠了進來。說完，又向你露出了招牌的微笑。<br><br>你無奈地朝他笑了笑，帶著五根火把，走進了迷宮。`;
+    html += `
       <div class="mission-section">
-        <div class="section-title">✦ ${sectionTitle}</div>
-        <div class="story-text" style="margin-bottom:20px">${introText}</div>
+        <div class="story-text" style="margin-bottom:20px">${CH3_MAZE_INTRO}</div>
         <div class="ornament">— ✦ —</div>
-        <p style="font-size:11px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 4px">✦ ${optLabel}</p>
-        <div class="story-text" style="margin-bottom:16px">${story}</div>
-        ${ch3ItemsHtml(items)}
+        <p style="font-size:12px;color:var(--gold);letter-spacing:0.1em;margin:12px 0 4px">✦ ${oliviaLabel}</p>
+        <div class="story-text" style="margin-bottom:16px">${oliviaStory}</div>
       </div>`;
   }
 
-  // ── build accumulated HTML ────────────────────────────────────────────────
-  let html = `<div class="story-body"><div class="story-text">${STORY_CH3}</div></div>`;
-
-  if (p.phase1 !== null) {
-    const o = CH3_PHASE1_OPTIONS.find(x => x.id === p.phase1);
-    if (o) html += doneSection('第一段｜解開堵塞', CH3_PHASE1_INTRO, o.label,
-      p.phase1_good ? o.story_good : o.story_bad,
-      p.phase1_good ? (o.items_good||[]) : (o.items_bad||[]));
-  }
-  if (p.phase2 !== null) {
-    const o = CH3_PHASE2_OPTIONS.find(x => x.id === p.phase2);
-    if (o) html += doneSection('第二段｜壓制岩壁', CH3_PHASE2_INTRO, o.label,
-      p.phase2_good ? o.story_good : o.story_bad,
-      p.phase2_good ? (o.items_good||[]) : (o.items_bad||[]));
-  }
-  if (p.phase3 !== null) {
-    const o = CH3_PHASE3_OPTIONS.find(x => x.id === p.phase3);
-    if (o) html += doneSection('第三段｜最終抉擇', CH3_PHASE3_INTRO, o.label,
-      p.phase3_good ? o.story_good : o.story_bad,
-      p.phase3_good ? (o.items_good||[]) : (o.items_bad||[]));
-  }
-
-  // ── DONE: append ending ───────────────────────────────────────────────────
   if (p.done) {
-    const goodCount = [p.phase1_good, p.phase2_good, p.phase3_good].filter(Boolean).length;
-    const ed = CH3_ENDINGS[String(goodCount)] || CH3_ENDINGS['0'];
     html += `
       <div class="mission-section" id="ch3ending">
-        <div class="section-title">✦ 結局｜${ed.title}</div>
-        <div class="story-text" style="margin-bottom:16px">${ed.body}</div>
+        <div class="section-title">✦ 迷宮已解除</div>
+        <div class="story-text" style="margin-bottom:16px">（結局文字待定）</div>
         <div class="mission-complete visible" style="margin-top:20px">
           <div class="complete-seal">⚔️</div>
           <div class="complete-title">第三章完成</div>
-          <div class="complete-text">你帶著部隊，從漏斗山道走了出來。</div>
           <button class="btn btn-gold" onclick="backToMap()">返回旅程地圖</button>
         </div>
       </div>`;
@@ -3929,87 +5012,48 @@ function renderChapter3() {
     return;
   }
 
-  // ── active options section ────────────────────────────────────────────────
-  function buildActiveSection(sectionTitle, introText, optsId) {
-    return `
+  if (p.olivia === null) {
+    html += `
       <div class="mission-section" id="ch3active">
-        <div class="section-title">✦ ${sectionTitle}</div>
-        <div class="story-text" style="margin-bottom:20px">${introText}</div>
+        <div class="story-text" style="margin-bottom:20px">${CH3_MAZE_INTRO}</div>
         <div class="ornament">— ✦ —</div>
-        <p style="font-size:12px;color:var(--ink-light);margin:12px 0 14px;letter-spacing:0.05em">選擇你的應對方式：</p>
-        <div style="display:flex;flex-direction:column;gap:10px" id="${optsId}"></div>
+        <p style="font-size:13px;color:var(--ink-light);margin:12px 0 14px;letter-spacing:0.05em">你的選擇：</p>
+        <div style="display:flex;flex-direction:column;gap:10px" id="ch3oliviaopts"></div>
       </div>`;
+    sc.innerHTML = html;
+    [
+      { label:'拒絕他的好意', hint:'', val:false, torches:5 },
+      { label:'接受他的幫助', hint:'', val:true,  torches:6 }
+    ].forEach(opt => {
+      const btn = document.createElement('div');
+      btn.className = 'book-item';
+      btn.style.cursor = 'pointer';
+      btn.innerHTML = `<div class="book-info">
+        <div class="book-title" style="font-size:14px">${opt.label}</div>
+        ${opt.hint ? `<div class="book-hint" style="font-size:12px;color:var(--ink-light)">${opt.hint}</div>` : ''}
+      </div>`;
+      btn.onclick = () => {
+        state.progress.ch3.olivia  = opt.val;
+        state.progress.ch3.torches = opt.torches;
+        saveState(); renderChapter3();
+      };
+      document.getElementById('ch3oliviaopts').appendChild(btn);
+    });
+    sc.scrollIntoView({ behavior:'smooth', block:'start' });
+    return;
   }
 
-  if (p.phase2 !== null) {
-    html += buildActiveSection('第三段｜最終抉擇', CH3_PHASE3_INTRO, 'ch3p3opts');
-    sc.innerHTML = html;
-    CH3_PHASE3_OPTIONS.forEach(opt => {
-      document.getElementById('ch3p3opts').appendChild(ch3BuildOptionBtn(opt.label, '', false, '', () => {
-        const isGood = opt.req && (stats[opt.req.stat]||0) >= opt.req.min;
-        state.progress.ch3.phase3      = opt.id;
-        state.progress.ch3.phase3_good = isGood;
-        state.progress.ch3.done        = true;
-        (isGood ? (opt.items_good||[]) : (opt.items_bad||[])).forEach(i => addItem(i));
-        saveState(); renderChapter3();
-      }));
-    });
-  } else if (p.side !== null) {
-    html += buildActiveSection('第二段｜壓制岩壁', CH3_PHASE2_INTRO, 'ch3p2opts');
-    sc.innerHTML = html;
-    CH3_PHASE2_OPTIONS.forEach(opt => {
-      document.getElementById('ch3p2opts').appendChild(ch3BuildOptionBtn(opt.label, '', false, '', () => {
-        const isGood = opt.req && (stats[opt.req.stat]||0) >= opt.req.min;
-        state.progress.ch3.phase2      = opt.id;
-        state.progress.ch3.phase2_good = isGood;
-        (isGood ? (opt.items_good||[]) : (opt.items_bad||[])).forEach(i => addItem(i));
-        saveState(); renderChapter3();
-      }));
-    });
-  } else {
-    html += buildActiveSection('第一段｜解開堵塞', CH3_PHASE1_INTRO, 'ch3p1opts');
-    sc.innerHTML = html;
-    CH3_PHASE1_OPTIONS.forEach(opt => {
-      document.getElementById('ch3p1opts').appendChild(ch3BuildOptionBtn(opt.label, '', false, '', () => {
-        const isGood = opt.req && (stats[opt.req.stat]||0) >= opt.req.min;
-        state.progress.ch3.phase1      = opt.id;
-        state.progress.ch3.phase1_good = isGood;
-        state.progress.ch3.side        = 'skip';
-        (isGood ? (opt.items_good||[]) : (opt.items_bad||[])).forEach(i => addItem(i));
-        saveState(); renderChapter3();
-      }));
-    });
-  }
-
-  // scroll to the new active section only when transitioning between phases (not on first entry)
-  if (p.phase1 !== null) {
-    document.getElementById('ch3active')?.scrollIntoView({ behavior:'smooth', block:'start' });
-  } else {
-    document.getElementById('storyContent')?.scrollIntoView({ behavior:'smooth', block:'start' });
-  }
-}
-
-// ── shared result renderer ────────────────────────────────────────────────────
-function showCh3PhaseResult(sectionTitle, optLabel, story, items, onContinue) {
-  const sc = document.getElementById('storyContent');
-  sc.innerHTML = `
-    <div class="story-body"></div>
-    <div class="mission-section">
-      <div class="section-title">✦ ${sectionTitle}｜${optLabel}</div>
-      <div class="story-text" style="margin-bottom:20px">${story}</div>
-      ${ch3ItemsHtml(items)}
-      <div class="reader-actions" style="margin-top:16px" id="ch3confirm"></div>
+  if (p.maze !== null) { renderMaze(); return; }
+  html += `
+    <div class="mission-section" id="ch3active">
+      <div class="reader-actions" style="margin-top:8px;text-align:center">
+        <button class="btn btn-gold" onclick="startMaze()">✦ 進入迷宮</button>
+      </div>
     </div>`;
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-gold';
-  btn.textContent = '✦ 繼續';
-  btn.onclick = onContinue;
-  document.getElementById('ch3confirm').appendChild(btn);
+  sc.innerHTML = html;
+  document.getElementById('ch3active')?.scrollIntoView({ behavior:'smooth', block:'start' });
 }
 
-// ══════════════════════════════════════════════
-// TOAST
-// ══════════════════════════════════════════════
 // ── DEV：清除存檔（測試用）────────────────────────────────────────────────
 function devClearSave() {
   if (!confirm('確定要清除所有本機存檔嗎？這個動作無法復原。')) return;
@@ -4017,15 +5061,20 @@ function devClearSave() {
   state = {
     char: { name:'', desc:'', avatar:'', stats:{ str:0, wis:0, cha:0 }, items:[] },
     bonusPoints: { wis:0, cha:0, free:0 },
-    progress: { ch1: { booksRead:[], done: false }, ch2: { task: 0, done: false, choices: [] }, ch3: { phase1: null, phase1_good: false, side: null, phase2: null, phase2_good: false, phase3: null, phase3_good: false, done: false } },
-    usedCodes: []
+    progress: { ch1: { booksRead:[], done: false }, ch2: { task: 0, done: false, choices: [] }, ch3: { olivia: null, torches: 5, maze: null, done: false } },
+    usedCodes: [],
+    achievements: []
   };
   renderChar();
   renderLore();
+  renderAchievements();
   renderMap();
   showToast('✦ 存檔已清除，遊戲重置');
 }
 
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -4039,7 +5088,9 @@ function showToast(msg) {
 loadState();
 renderChar();
 renderLore();
+renderAchievements();
 renderMap();
+
 </script>
 </body>
 </html>
